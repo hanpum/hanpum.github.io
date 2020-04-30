@@ -3,18 +3,18 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: 寒璞
+title: weixing.mei
 subtitle: ''
 description: ''
 keywords:
 author: hanpu.mwx
-language: en
+language: zh-CN
 timezone: ''
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
-url: http://yoursite.com/blog
-root: /blog/
+url: https://weixingmei.github.io
+root: /
 permalink: :year/:month/:day/:title/
 permalink_defaults:
 pretty_urls:
@@ -41,7 +41,7 @@ external_link:
   exclude: ''
 filename_case: 0
 render_drafts: false
-post_asset_folder: false
+post_asset_folder: true
 relative_link: false
 future: true
 highlight:
@@ -101,3 +101,22 @@ deploy:
   type: git
   repository: https://github.com/weixingmei/weixingmei.github.io
   branch: master
+
+
+
+##########################################
+# customize settings
+##########################################
+
+# org
+org:
+  emacs: /usr/local/bin/emacs
+  emacsclient: /usr/local/bin/emacsclient
+  # 是否生成自动注脚, t 为开启, nil 为关闭
+  common: |
+    #+OPTIONS: html-postamble:nil
+    #+OPTIONS: toc:nil
+    #+OPTIONS: org-confirm-babel-evaluate:nil
+  clean_cache: true
+  htmlize: false
+  
