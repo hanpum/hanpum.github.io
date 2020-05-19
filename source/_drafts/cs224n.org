@@ -1,0 +1,26 @@
+#+TITLE: cs224n
+#+AUTHOR:hanpu.mwx
+#+EMAIL: hanpu.mwx@gmail.com
+#+DATE: <2020-04-30 Thu>
+#+UPDATED: <2020-04-30 Thu>
+#+LATEX_HEADER: \usepackage{xeCJK} 
+#+LATEX_HEADER: \usepackage{natbib}
+#+LATEX_HEADER: \usepackage[version=3]{mhchem}
+#+LATEX_HEADER: \usepackage{makeidx}
+#+LATEX_HEADER: \usepackage{amssymb}
+#+LATEX_HEADER: \makeindex
+#+LATEX_HEADER: \newcommand{\vector}[1] { \mathbf{#1} }
+#+TAGS: NLP, DEEPLEARNING
+#+CATEGORIES: NOTES
+#+PROPERTY: header-args :output-dir ./cs224n 
+#+OPTIONS: ^:{}
+
+* 开篇语
+  #+begin_quote
+  语言是用来交流的一种媒介，其高效的原因在于简洁，不必事无巨细全部讲清楚，交流双方可以基于共同的常识，
+  上下文语境快速推理得到完整的信息，但是这些信息对于当下的机器来说，是比较难以获得的
+  #+end_quote
+
+** 相关资源
+  * [[http://web.stanford.edu/class/cs224n/][CS224n: Natural Language Processing with Deep Learning(Winter 2020)]]
+  * [[https://www.bilibili.com/video/av46216519][B站视频列表]]

@@ -1,0 +1,16 @@
+#+TITLE: {{ title }}
+#+AUTHOR:hanpu.mwx
+#+EMAIL: hanpu.mwx@gmail.com
+#+DATE: {{ }}
+#+UPDATED: {{ }}
+#+LATEX_HEADER: \usepackage{xeCJK} 
+#+LATEX_HEADER: \usepackage{natbib}
+#+LATEX_HEADER: \usepackage[version=3]{mhchem}
+#+LATEX_HEADER: \usepackage{makeidx}
+#+LATEX_HEADER: \usepackage{amssymb}
+#+LATEX_HEADER: \makeindex
+#+TAGS: NLP, DEEPLEARNING
+#+CATEGORIES: NOTES
+#+PROPERTY: header-args :output-dir ./cs224n 
+#+OPTIONS: ^:{}
+

@@ -3,7 +3,7 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: weixing.mei
+title: hanpum
 subtitle: ''
 description: ''
 keywords:
@@ -13,7 +13,7 @@ timezone: ''
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
-url: https://weixingmei.github.io
+url: https://hanpum.github.io
 root: /
 permalink: :year/:month/:day/:title/
 permalink_defaults:
@@ -99,7 +99,7 @@ theme: next
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
   type: git
-  repository: https://github.com/weixingmei/weixingmei.github.io
+  repository: https://github.com/hanpum/hanpum.github.io
   branch: master
 
 
@@ -110,13 +110,14 @@ deploy:
 
 # org
 org:
+  debug: false
   emacs: /usr/local/bin/emacs
   emacsclient: /usr/local/bin/emacsclient
+  line_number: true
   # 是否生成自动注脚, t 为开启, nil 为关闭
   common: |
     #+OPTIONS: html-postamble:nil
-    #+OPTIONS: toc:nil
+    #+OPTIONS: toc:nil num:nil
     #+OPTIONS: org-confirm-babel-evaluate:nil
   clean_cache: true
   htmlize: false
-  

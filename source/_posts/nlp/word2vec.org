@@ -1,0 +1,1003 @@
+#+TITLE: 词向量: word2vec
+#+AUTHOR:hanpu.mwx
+#+EMAIL: hanpu.mwx@gmail.com
+#+DATE: <2020-04-30 Thu>
+#+UPDATED: <2020-04-30 Thu>
+#+LATEX_HEADER: \usepackage{xeCJK} 
+#+LATEX_HEADER: \usepackage{natbib}
+#+LATEX_HEADER: \usepackage[version=3]{mhchem}
+#+LATEX_HEADER: \usepackage{makeidx}
+#+LATEX_HEADER: \usepackage{amssymb}
+#+LATEX_HEADER: \makeindex
+#+LATEX_HEADER: \newcommand{\vector}[1] { \mathbf{#1} }
+#+TAGS: NLP, DEEPLEARNING
+#+CATEGORIES: NOTES
+#+PROPERTY: header-args :output-dir ./word2vec
+#+OPTIONS: ^:{}
+
+* 概述
+** 词向量
+   ~word vector~, 从字面意思来理解，就是词向量。也就是使用一个向量来表示一个词, 其好处就是能够使用数
+   学语言来描述文字符号，从而可以使用数学工具对齐进行分析。
+
+   \begin{equation*}
+     \mathbf{u} = [x_{0}, x_{1}, \cdots, x_{d}]^T
+   \end{equation*}
+
+   从发展历史来看，词向量大致可以分为如下几种:
+   1. 特征工程
+   2. 共现矩阵
+   3. predication-based
+      
+   下面分别对其进行简单介绍
+      
+** 特征向量
+    特征向量属于特征工程时代的产物，就是人工设计一组特征(一般是离散的), 然后提取对应的特征值得到一组
+    向量。比如，假设有如下三个特征维度:
+    1. 单词长度
+    2. 是否是名词: 可能取值 0,1
+    3. 是否是人称代词：可能取值 0,1
+       
+    那么，可以将所有word表示为一个三维的向量 $X$, 
+    - $X[0]$ : 记录这个单词的长度
+    - $X[1]$ : 记录这个单词是不是名词
+    - $X[2]$ : 记录这个单词是不是人称代词
+
+    相应的就可以计算得到每个单词对应的向量
+
+    #+BEGIN_EXAMPLE
+      我们 -> [2, 1, 1]
+      热爱 -> [2,0,0]
+      NLP -> [3,1,0]
+    #+END_EXAMPLE
+    
+    这种表示方法比较简单，是一个离散的特征表示，表达能力有限，而且需要人工设计所有的特征，系统性能的
+    好坏极度的依赖特征的选择。
+    
+** 共现矩阵
+    共现矩阵的依据如下:
+
+    #+begin_notes
+    You shall know a word by the company it keeps. 
+                         -- ([[https://en.wikipedia.org/wiki/John_Rupert_Firth][Firth, J. R. 1957:11]])
+    #+end_notes
+    
+    通俗地讲，就是 *从其交友知其为人*, 也就是一个单词的含义可以从它周围的单词推测出来。这个道理也很
+    好懂。在遣词造句的时候，我们会不自知的遵循某些知识，这些知识可以是语言学知识，比如主谓宾结构;可
+    以是常理知识，比如 *X的首都是Y* ，X会是个国家，Y会是个城市等等。
+    
+    共现矩阵的做法就是统计两个词同时出现的次数，用某一个词旁边所有其它词出现的次数来作为它的词向量。
+    比如，给定下面两句话: 
+
+    #+begin_example
+    all that glitters is not gold 
+    all is well that ends well
+    #+end_example
+    
+    如果两个单词 $w_i, w_j$ 相邻(也可以放宽条件，比如相隔不超过N个单词)，将对应的计数 $cnt_{i,j}$ 加
+    一，于是可以得到如下矩阵:
+
+    #+name: bigram 
+    |----------+-----+------+----------+----+-----+------+------+------|
+    |          | all | that | glitters | is | not | gold | well | ends |
+    |----------+-----+------+----------+----+-----+------+------+------|
+    | all      |   0 |    1 |        0 |  1 |   0 |    0 |    0 |    0 |
+    | that     |   1 |    0 |        1 |  0 |   0 |    0 |    1 |    1 |
+    | glitters |   0 |    1 |        0 |  1 |   0 |    0 |    0 |    0 |
+    | is       |   1 |    0 |        1 |  0 |   1 |    0 |    1 |    0 |
+    | not      |   0 |    0 |        0 |  1 |   0 |    1 |    0 |    0 |
+    | gold     |   0 |    0 |        0 |  0 |   1 |    0 |    0 |    0 |
+    | well     |   0 |    1 |        0 |  1 |   0 |    0 |    0 |    1 |
+    | ends     |   0 |    1 |        0 |  0 |   0 |    0 |    1 |    0 |
+    |----------+-----+------+----------+----+-----+------+------+------|
+    
+    这里的每一行或者每一列即可用来表示一个单词的词向量，该向量的长度为词表大小 $\parallel V \parallel$ 。
+    在实际情况中, $\parallel V \parallel$ 可以达到上百万, 所以这里得到的是一个高维稀疏
+    矩阵，冗余度比较大，直接使用效果不佳，一般对其进行降维压缩处理, 比如使用SVD(奇异值分解), 将其从
+    $\mathbb{R}^{V \times V}$ 降维成 $\mathbb{R}^{V \times K}$ , 一般 $K \ll V$, 比如取300，500，1000等。
+    
+    这个方法直接使用的效果并不是很好，因为有很多常见的词，比如 ~a~, ~the~, ~is~ ， 这些词出现的概率
+    一般都比较高，因此很有可能出现如下结果: 
+
+    |----------+----------+----------+----------+----------+----------+----------+----------|
+    |          | $\cdots$ | that     | is       | $\cdots$ | gold     | well     | $\cdots$ |
+    |----------+----------+----------+----------+----------+----------+----------+----------|
+    | $\cdots$ | $\cdots$ | $\cdots$ | $\cdots$ | $\cdots$ | $\cdots$ | $\cdots$ | $\cdots$ |
+    |----------+----------+----------+----------+----------+----------+----------+----------|
+    | glitters | $\cdots$ | 90000    | 100000   | $\cdots$ | 30       | 50       | $\cdots$ |
+    |----------+----------+----------+----------+----------+----------+----------+----------|
+    | $\cdots$ | $\cdots$ | $\cdots$ | $\cdots$ | $\cdots$ | $\cdots$ | $\cdots$ | $\cdots$ |
+    |----------+----------+----------+----------+----------+----------+----------+----------|
+
+    但是对于两个不同的单词，比如 ~gold~ ， ~gitters~ ， ~gold is~ ， ~gitters is~ 出现的次数是差不多
+    的，也就是说 ~is~ 对区分 ~gold~ ， ~gitters~ 并没有多大帮助。从而导致词向量中被一些无意义的分量主导，
+    而真正有价值的信息被湮没了。
+
+    针对这种情况，可以对共现频次统计量做一些高频惩罚，比如，取平方根，取对数等, 取上限等。 
+
+    \begin{equation*}
+      cnt_{i,j}^{'} = \sqrt{cnt_{i,j}}
+      \qquad or \qquad cnt_{i,j}^{'} = log(cnt_{i,j}+1)
+      \qquad or \qquad cnt_{i,j}^{'} = min(cnt_{i,j}, \mathbf{C})
+    \end{equation*} 
+
+    cite:pennington-2014-glove 给出的结果验证了上述问题。
+
+    #+ATTR_HTML: :width 400px
+    #+ATTR_LATEX: :width 400px
+    [[file:word2vec/gloveSVD.jpg]]
+    
+    其中 *SVD-L* 表示取 $log$ ， *SVD-S* 表示取平方根。
+    
+** 任务导向
+   基于任务导向的词向量学习方法和上面的共现矩阵一样，其最基础的依据也是根据单词的上下文来推测其含义。
+   不过，实现的方式和共现矩阵却大相径庭，其策略是以终为始, 设计一个或者一组任务，将每个单词或者字映
+   射为一个向量作为输入, 然后通过机器学习的方式对设计的任务进行优化，优化过程中也会对词向量进行优化。
+   当任务训练完成之后，将优化完毕的词向量取出即为最终每个单词的向量表示。
+   
+   本文要讲的word2vec (cite:mikolov-2013-effic-estim,mikolov-2013-distr-repres), 
+   glove ([[cite:pennington-2014-glove]]), 以及 Bengio 03年的 NNLM ([[cite:bengio-2003-neural-probab]]), 
+   以及后面一系列的预训练模型直到集大成的 BERT ([[cite:devlin-2018-bert]]) 都属于此列。
+
+   接下来对 word2vec 做一些深入分析, glove 留待下一篇文章来分析了。
+
+* 设计思路
+   word2vec 于 13 年在 cite:mikolov-2013-effic-estim,mikolov-2013-distr-repres 这两篇 paper 中提出来
+   的。其主要设计思路如上面所说，就是使用单词周围的单词来预测给定单词的概率，依实现方式可以分为
+   *SKIP_GRAM* 和 *CBOW(Continues Bag of Words)* 两种，下面一一道来。
+
+* skip-gram
+** 目标函数
+  给定一个句子 $S = [w_0, w_1, \cdots, w_T]$, 以及句子中的一个位置 $t, t \in [0, T]$ , $S_t$ 表示位
+  置 $t$ 处的单词，skip-gram的目标是 通过 $S_t$ 来预测其周围单词出现的概率。
+
+  #+NAME: skipGram
+  #+HEADER: :headers '("\\usepackage{tikz}" "\\usepackage{xeCJK}" "\\usetikzlibrary{arrows.meta}" "\\usetikzlibrary{positioning}")
+  #+HEADER: :imagemagick yes
+  #+HEADER: :iminoptions -density 300 :imoutoptions -quality 100 -geometry 800
+  #+BEGIN_SRC latex :fit yes :results file link slient :file-ext png :output-dir word2vec :exports none
+    \begin{tikzpicture} [auto, >=Stealth, symbol/.style={gray!80},
+      word/.style={shape=circle,draw=blue!50,thick,fill=blue!20,minimum size=1.2cm}]
+
+      % window
+      \draw[dashed,thick,gray!36,fill=green!10] (-5,-3.0) rectangle (5,2.5);
+      \node[gray!81] at (4,2) {\small \textbf{\textit{window = 2}}};
+
+      %\draw[step=0.5cm,color=gray!30,dashed] (-6,-2) grid (6,2);
+      %\draw [->,red!20] (-6,0) -- (6,0);
+      %\draw [->,red!20] (0,-2) -- (0,2);
+      %\foreach \x in {-6,...,6} {
+      %	   \node[anchor=north] at (\x, 0) {\tiny $\x$};
+      %}
+      %\foreach \x in {-2,...,2} {
+      %	 \node[anchor=west] at (0, \x) {\tiny $\x$};
+      %}
+
+      % draw nodes
+      \path (-6,0) node (oleft) [word] {$\cdots$}
+    +(0,-2.5) node[symbol] {$\cdots$}
+   ++(2,0) node (t-2) [word] {$S_{t-2}$}
+    +(0,-2.5) node [symbol] {hi}
+   ++(2,0) node (t-1) [word] {$S_{t-1}$}
+    +(0,-2.5) node [symbol] {nice}
+   ++(2,0) node (t) [word,fill=red!20,dashed,very thick] {$S_{t}$}
+    +(0,-2.5) node [symbol] {to}
+   ++(2,0) node (t+1) [word] {$S_{t+1}$}
+    +(0,-2.5) node [symbol] {meet}
+   ++(2,0) node (t+2) [word] {$S_{t+2}$}
+    +(0,-2.5) node [symbol] {you}
+   ++(2,0) node (oright) [word] {$\cdots$}
+    +(0,-2.5) node [symbol] {$\cdots$};
+
+      % connect lines
+      \draw (t) 
+   edge [->,out=90,in=90] node[auto,swap] {\tiny $P(S_{t-2}=hi|S_t=to,\Theta)$} (t-2)
+   edge [->,out=90,in=90] (t-1)
+   edge [->,out=-90,in=-90] (t+1)
+   edge [->,out=-90,in=-90] node[auto,swap] {\tiny $P(S_{t+2}=you|S_t=to,\Theta)$}(t+2);
+
+      \node [anchor=east] at (-1.0,1.3) {
+
+      \tiny$P(S_{t-1}=nice|S_t=to,\Theta)$};
+      \node [anchor=west] at (1.0,-1.3) {\tiny$P(S_{t+1}=meet|S_t=to,\Theta)$};
+    \end{tikzpicture}
+  #+END_SRC
+  
+  [[file:word2vec/skipGram.png]]
+
+  一般来说，两个单词距离越远，其相关性越弱，因此为了简化计算，可以将计算范围限定在一个窗口区域内
+  $2M+1$ , 上图画出了 $M=2$ 的情况。 假设这 $2M$ 个概率事件相互独立，那么可以通过简单的相乘来计算这
+  一组事件的概率:
+
+  \begin{equation*}
+    \mathcal{L}(t) = \prod\limits_{\substack{i\neq 0 \\ i=-M}}^{M} p(S_{t+i}=w_{t+i}|S_t=w_{t}, \Theta)
+  \end{equation*}			     
+
+  为了书写方便， 将 $p(S_{t+i}=w_{t+i}|S_{t}=w_t, \Theta)$ 简写为 $p(w_{t+i}|w_t, \Theta)$
+
+  \begin{equation} \label{eq-skip-gram-word}
+    \mathcal{L}(t) = \prod\limits_{\substack{i\neq 0 \\ i=-M}}^{M} p(w_{t+i}|w_{t}, \Theta)
+  \end{equation}			     
+
+  这样就给出了基于单词 $S_t$ 预测其上下文的一个评价标准。式 [[eqref:eq-skip-gram-word]] 只是针对句子中
+  的一个位置 ~t~ ， 对于整个句子 ~S~ 中每一个位置(不包括开头和结尾的 ~M~ 个)，都可以计算得
+  到这样一个概率，假设不同的 ~t~ 对应的概率事件相互独立，那么就可以计算出整个句子上的概率来:
+
+     \begin{equation} \label{eq-skip-gram-sentense}
+\mathcal{L}(S) = \prod\limits_{t=M}^{T-M} \prod\limits_{\substack{i\neq 0 \\ i=-M}}^{M} p(w_{t+i}|w_{t}, \Theta)
+     \end{equation}	
+     
+  接下来对 [[eqref:eq-skip-gram-sentense]] 做如下的改造:
+  1. 取 ~log~, 计算方便，而且避免数值计算的精度丢失问题
+  2. 除以 ~T~ , 移除句子长度的影响
+  3. 取负，将最大化问题转为最小化问题
+     
+  即可得到 skip-gram 模型最终的 ~loss~ 函数
+
+      \begin{equation} \label{eq-skip-gram-loss}
+ \mathcal{J}(\Theta) = -\frac{1}{T}\sum\limits_{t=M}^{T-M} \sum\limits_{\substack{i\neq 0 \\ i=-M}}^{M} log\ p(w_{t+i}|w_{t},\Theta) 
+      \end{equation}	
+
+  $\Theta$ 是模型参数，随后会有详细解释。 接下来的问题就是，如何计算 $p(w_{t+i}|w_t, \Theta)$ 这个
+  条件概率呢?
+
+** 条件概率
+   为了描述方面，上面 $w_t, w_{t+i}$ 表示的是一个具体的单词，由于每个单词都对应一个向量，所以 $\mathbf{w_t},
+   \mathbf{w_{t+i}}$ 也可以等价为对应的向量，以后都按照这种方式来表示。
+
+     \begin{equation*}
+\mathbf{W} = \left[
+\begin{array}{cccc}
+  w_{00} & w_{01} & \cdots & w_{0D} \\
+  w_{10} & w_{11} & \cdots & w_{1D} \\
+  \vdots & \vdots & \ddots & \vdots \\
+  w_{V0} & w_{V1} & \cdots & w_{VD} 
+\end{array} \right] 
+= \left[
+\begin{array}{c}
+  \mathbf{w_{0}}^T \\
+  \mathbf{w_{1}}^T \\
+  \vdots \\
+  \mathbf{w_{V}}^T
+\end{array} \right]
+     \end{equation*}
+     
+   
+   这个时候 $p(\mathbf{w_{t+i}}|\mathbf{w_{j}}, \Theta=\{W\})$ ，计算的是给定一个向量，另一个向量出现的概率，很自
+   然的，可以计算这两个向量的相似度，然后做一个归一化即可得到概率。向量的相似度计算方式有很多，
+   ~word2vec~ 中采用的是 [[https://baike.baidu.com/item/%E4%BD%99%E5%BC%A6%E7%9B%B8%E4%BC%BC%E5%BA%A6/17509249][余弦相似度]]，也即: 
+
+   \begin{equation*}
+     cos(\mathbf{w}_{i}, \mathbf{w}_{j}) = \frac
+     {
+\mathbf{w}_{i}\cdot \mathbf{w}_{j}
+     }
+     {
+\parallel \mathbf{w}_{i} \parallel
+\cdot
+\parallel \mathbf{w}_{j} \parallel
+     }
+   \end{equation*}
+
+   这个公式可以由欧几里得点积公式
+
+   \begin{equation*}
+     [x_1, y_1] \cdot [x_2, y_2] = x_1 \cdot x_2 + y_1 \cdot y_2
+   \end{equation*}
+
+   和余弦定理
+
+   \begin{equation*}
+     \mathbf{c}^2 = \mathbf{a}^2 + \mathbf{b}^2 - 2\parallel \mathbf{a} \parallel \cdot \parallel \mathbf{b} \parallel \cdot \ cos(\theta), 
+     \qquad \text{in which } \mathbf{c} = \mathbf{a} + \mathbf{b}
+   \end{equation*}
+   
+   推导得到（将向量表示代入余弦定理，结合点积公式整理化简），具体细节这里不做展开。
+   
+   在实际使用中，$\color{red}{如果假设 \mathbf{w}_i, \mathbf{w}_j 都是单位向量}(待确认)$，那么，余弦相似度中的分母可
+   以忽略。于是可以得到未归一化的概率:
+   
+   \begin{equation*} 
+     \hat{p}(\mathbf{w}_{i}|\mathbf{w}_{j}) = \mathbf{w}_{i} \cdot \mathbf{w}_{j}
+   \end{equation*}
+   
+   使用 ~softmax~ 函数进行归一化，即可得到最终的条件概率:
+
+   \begin{equation} \label{eq-softmax}
+     p(\mathbf{w}_{i}|\mathbf{w}_{j}) \ =\ \mathcal{S}(\mathbf{w_i} \cdot \mathbf{w_j}) \ =\ \frac{exp(\mathbf{w}_{i} \cdot \mathbf{w}_{j})}
+				      {\sum\limits_{j=0}^{V} exp(\mathbf{w}_{j} \cdot \mathbf{w}_{j})}
+   \end{equation}
+
+** 优化公式
+    给出了 ~loss~ 函数之后，使用梯度下降算法进行优化即可, 先计算梯度
+
+    \begin{equation} \label{eq-skip-gram-gradient}
+      \begin{array}{ccc}
+	\frac{\partial \mathcal{J}}{\partial \mathbf{w_{i}}} & = &
+						  -\frac{1}{T}
+						  \sum\limits_{t=M}^{T-M} \sum\limits_{\substack{i\neq 0 \\ i=-M}}^{M}
+	\frac{\partial log\ p(\mathbf{w_{t+i}}|\mathbf{w_{t}})}{\partial \mathbf{w_{i}}}
+      \end{array}
+    \end{equation}
+
+    然后利用梯度下降更新参数即可
+    
+    \begin{equation} \label{eq:gradient-descent}
+      \mathbf{\hat{w}_i} = \mathbf{w_i} - \eta \cdot \frac{\partial \mathcal{J}}{\partial \mathbf{w_i}}
+    \end{equation}
+    
+    其中 $\eta$ 为学习率。
+    
+    ~softmax~ 有一个很大的好处就是求导简单，因为:
+
+    \begin{equation*}
+	  \begin{array}{rcl}
+	    \mathcal{S}(x_{i}) & = & \frac{e^{y_i}}{ \sum_{j} e^{y_j}}, \qquad \textrm{in which } y_i = f(x_i) \\
+	    \\
+	    \frac{\partial \mathcal{S}} {\partial x_{i}}
+		     % & = & \frac{
+		     %       e^{y_i}
+		     %       \cdot
+		     %       \frac{\partial {y_{i}}}{\partial x_{i}}
+		     %       \cdot
+		     %       \big(\sum_{j}e^{y_j}\big)
+		     %       \quad - \quad
+		     %       e^{y_{i}}
+		     %       \cdot
+		     %       e^{y_i}
+		     %       \cdot
+		     %       \frac{\partial {y_{i}}}{ \partial x_{i}}
+		     %       } {
+		     %       \big(\sum_{j} e^{y_{j}}\big)^{2}
+		     %       } \\
+		     % & = & [\mathcal{S}(x_{i}) - \mathcal{S}(x_{i})^{2}]
+		     %       \cdot 
+		     %       \frac{\partial {y_{i}}}{ \partial x_{i}} \\
+		     & = & \mathcal{S}(x_{i} ) \cdot [1 - \mathcal{S}(x_{i})]
+			   \cdot 
+			   \frac{\partial {y_{i}}}{ \partial x_{i}} \\
+	    \\ 
+	    \frac{\partial log \mathcal{S}} {\partial x_{i}}
+		     & = & [1 - \mathcal{S}(x_{i})]
+			   \cdot 
+			   \frac{\partial {y_{i}}}{ \partial x_{i}} 
+	  \end{array}
+	\end{equation*}
+    
+    也就是知道 $\mathcal{S}(x_i)$ 之后, 做简单加减运算就可以得到 $log\ \mathcal{S}(x_i)$ 的导数。
+
+    不过，当 $y = \mathbf{w}_i \cdot \mathbf{w}_j$ 的时候, 有
+	
+    \begin{equation*}
+      \frac{\partial y } {\partial \mathbf{w}_{j}} = \left\{
+	  \begin{array}{cl}
+	    \mathbf{w}_{i}, && i \neq j \\
+	    2 \cdot \mathbf{w}_{i}, && i = j
+	  \end{array}
+      \right.
+    \end{equation*}
+
+    也即计算梯度的时候需要做一个 ~if~ 判断, 做批量并行处理的时候, 为了实现这个 ~if~ 
+    需要花点小心思。当然也可以偷懒绕过这个问题，最简单的就是引入另一个参数 $\mathbf{Q} \in \mathbb{R}^{V \times D}$ , 其大小和含义和
+    $\mathbf{W}$ 一样，每一行都对应一个单词的词向量，不过 $\mathbf{W}$ 用于表示中间那个单词，而
+    $\mathbf{Q}$ 用于表示需要被预测的单词，此时，$y = \mathbf{q}_i \cdot \mathbf{w}_j$ , 
+
+    \begin{equation*}
+      \left \{
+	\begin{array}{rcl}
+	  \frac{\partial y } {\partial \mathbf{q}_{j}} & = & \mathbf{w}_{i}\\
+	  \frac{\partial y } {\partial \mathbf{w}_{i}} & = & \mathbf{q}_{j}\\
+	\end{array}
+      \right.
+    \end{equation*}
+    
+    这样一来, 求导的时候 $\mathbf{q}_i,\mathbf{u}_n$ 互不干扰，从而避免了上述问题。 代入式
+    [[eqref:eq-skip-gram-gradient]]  中可以得到
+    
+    \begin{equation*}
+      \begin{array}{rcl}
+	\frac{\partial \mathcal{J}}{\partial \mathbf{w_{i}}} & = & -\frac{1}{T}
+						  \sum\limits_{t=M}^{T-M} \sum\limits_{\substack{i\neq 0 \\ i=-M}}^{M}
+	\left[1 - \mathcal{S}(\mathbf{q_i} \cdot \mathbf{w_j})\right] \cdot \mathbf{q_j}
+	\\
+	\\
+	\frac{\partial \mathcal{J}}{\partial \mathbf{q_{j}}} & = & -\frac{1}{T}
+						  \sum\limits_{t=M}^{T-M} \sum\limits_{\substack{i\neq 0 \\ i=-M}}^{M}
+	\left[1 - \mathcal{S}(\mathbf{q_i} \cdot \mathbf{w_j})\right] \cdot \mathbf{w_i}
+      \end{array}
+    \end{equation*}
+
+    但是这样一来的话，模型参数量翻了一倍，而且每个单词会对应两个向量 $\mathbf{q}_i, \mathbf{w}_i$ ，
+    cs224n 中给出的答案是简单的将其做一个平均得到最终的向量。
+    
+    至此， ~skip-gram~ 的模型架构以及更新细节就讲解完毕了。在后面的具体实现部分，我们会进一步分析
+    ~word2vec~ 源码实现中的一些优化，到时候可以看到实际的loss函数和这里讲的是有一些差异的。
+
+* CBOW
+** 目标函数
+    和 ~skip-gram~ 相比， ~cbow~ 的模型架构更接近传统意义的神经网络。
+
+    #+NAME: cbow
+    #+HEADER: :headers '("\\usepackage{tikz}" "\\usepackage{xeCJK}" "\\usetikzlibrary{arrows.meta}" "\\usetikzlibrary{positioning}")
+    #+HEADER: :imagemagick yes
+    #+HEADER: :iminoptions -density 600 :imoutoptions -geometry 800 -quality 100
+    #+BEGIN_SRC latex :fit yes :results file link slient :file-ext png :output-dir word2vec :exports none
+      \begin{tikzpicture} [auto, >=Stealth, inner sep=0cm, scale=2.0,
+        line/.style={gray!64}, arrow/.style={->,gray!64},
+	word/.style={shape=circle,draw=blue!50,thick,fill=blue!20,minimum size=1.0cm},
+	box/.style={rounded corners=5pt,draw=white,thick,fill=gray!10}]
+
+	% axis grid
+	\draw[step=0.5cm,color=gray!20,dashed] (-4,-2) grid (4,2);
+	\draw [->,red!20] (-4,0) -- (4,0);
+	\draw [->,red!20] (0,-2) -- (0,2);
+	
+	\foreach \x in {-4,...,4} {
+	  \node[below=2pt,gray!30] at (\x, 0) {$\x$};
+	}
+	\foreach \x in {-2,-1,1,2} {
+	  \node[right=2pt,gray!30] at (0, \x) {$\x$};
+	}
+
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	% left bounding box
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	\draw[box] (-4.4,-2.5) rectangle (-0.1,2.5);
+	\node at (-0.6,2.2) {\Large $\mathbf{RNN}$};
+
+	% W 
+	%\node[word,fill=white] (actFun) at (3,0) {$\sigma(\cdot)$};
+	%\node[above=3pt] at (actFun.north) {$\hat{w_t}$};
+
+	% input
+	\foreach \y/\text in {-2/-2,-1/-1, 0/, 1/+1, 2/+2} {
+	    \draw (-4.0,\y) node[word] (x_\y) {$x_{t\text}$};
+	    \draw (-3.0,\y) node[word] (h_\y) {$h_{t\text}$};
+	    \draw [arrow] (x_\y) -- (h_\y);
+	}
+	
+	\draw [arrow] (h_-2) -- (h_-1);
+	\draw [arrow] (h_-1) -- (h_0);
+	\draw [arrow,dashed] (h_0) -- (h_1);
+	\draw [arrow,dashed] (h_1) -- (h_2);
+
+	% output
+	\node[word,fill=green!0.318] (output) at (-1.0,0) {$w_t$};
+	\node [above=3pt] at (-2.0,0) {$p(w_t|\hat{h_t})$};
+
+	\draw [arrow] (h_0) -- (output);
+
+
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	% right bounding box
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	\draw[box] (4.4,-2.5) rectangle (0.1,2.5);
+	\node at (3.8,2.2) {\Large $\mathbf{CBOW}$};
+
+	% sum node
+	\node[word,fill=white] (sum) at (2.5,0) {$\sum$};
+	\node[above=3pt] at (sum.north) {$h_t$};
+
+	% input
+	\foreach \y/\text in {-2/-2,-1/-1, 1/+1, 2/+2} {
+	    \draw (1.0,\y) node[word] (x_\y) {$x_{t\text}$};
+	    \draw[arrow] (x_\y) -- (sum);
+	}
+
+	% output
+	\node[word,fill=green!0.318] (output) at (4.0,0) {$w_t$};
+	\draw[arrow] (sum) -- (output);
+	\node [above=3pt] at (3.25,0) {$p(w_t|h_t)$};
+      \end{tikzpicture}
+    #+END_SRC
+
+    [[file:word2vec/cbow.png]]
+    
+    左图是传统 ~RNN~ 的一个简化示意图，输入 $\mathbf{x_t}$ 向量 (这里可以看做是词向量) 一般会经过一个非线性变化, 比如
+    $\sigma(\mathbf{w} \cdot \mathbf{x} + b)$ , 得到中间隐层表示 $\mathbf{h_t}$ , 然后基于
+    $\mathbf{h_t}$ 和目标向量 $\mathbf{w_t}$ 计算 ~loss~ 函数。
+    
+    从上图可以看出来， ~CBOW~ (上面的 ~skip-gram~ 也是如此) 直接移除了中间的隐层计算。这是因为二者的
+    关注点不一样。在左图的网络中， 主要任务是训练整个网络优化最后的输出，比如
+    [[cite:bengio-2003-neural-probab]] 中主要是为了训练得到完整的网络用作语言模型，隐层中 ~RNN~ 的
+    引入是为了更好地解决语言模型的依赖问题, 最终得到词向量只是附带的一个产物。而在 ~word2vec~ 中的首
+    要任务就是得到词向量, 因此可以做此简化。
+    
+    从上面的图可以看出来， ~CBOW~ 的目标函数也是比较简单的, 下面直接给出:
+    
+    \begin{equation} \label{eq-cbow-loss}
+      \begin{array}{rcl}
+	h_{t} & = & \sum\limits_{\substack{i \neq 0\\ i=-M}}^{M} w_{t+i} \\
+	\\
+	\mathcal{J}(\Theta) & = & -\frac{1}{T}\sum\limits_{t=M}^{T-M} log\ p(w_{t}|h_{t},\Theta) 
+      \end{array}
+    \end{equation}
+    
+    整个和 ~skip-gram~ 非常像，这里就不做展开了。
+
+* 具体实现
+** overview
+   本节讲一下 [[cite:mikolov-2013-distr-repres]] 中提到的一些优化技巧。
+   
+   在式 [[eqref:eq-skip-gram-loss]] [[eqref:eq-cbow-loss]] 中, 都需要计算两个向量之间的一个相似度，
+   $p(\mathbf{w_i}|\mathbf{w_j})$ , 这里回顾一下计算公式 eqref:eq-softmax
+
+    \begin{equation*} 
+      p(\mathbf{w}_{i}|\mathbf{w}_{j}) \ =\ \mathcal{S}(\mathbf{w_i} \cdot \mathbf{w_j}) \ =\ \frac{exp(\mathbf{w}_{i} \cdot \mathbf{w}_{j})}
+					      {\sum\limits_{j=0}^{V} exp(\mathbf{w}_{j} \cdot \mathbf{w}_{j})}
+    \end{equation*}
+    
+    其分母需要在整个词表大小 $V$ 上计算, 前面说过， $\parallel V \parallel$ 在实际使用可能是上百万的
+    量级，计算量比较大，计算示意图如下。
+
+    #+NAME: softmax
+    #+HEADER: :headers '("\\usepackage{tikz}" "\\usepackage{xeCJK}" "\\usetikzlibrary{arrows.meta}" "\\usetikzlibrary{positioning}")
+    #+HEADER: :imagemagick yes
+    #+HEADER: :iminoptions -density 600 :imoutoptions -geometry 800x600 -quality 100
+    #+BEGIN_SRC latex :fit yes :results file link slient :file-ext png :output-dir word2vec :exports none
+      \begin{tikzpicture}[auto, >=Stealth, inner sep=0cm, scale=2.5,
+	word/.style={shape=circle,draw=blue!50,thick,fill=blue!20,minimum size=1.6cm,font=\scriptsize},
+	empword/.style={word,fill=red!12},
+	arrow/.style={->,gray!64}]
+
+	% axis grid
+	%\draw[step=0.5cm,color=gray!20,dashed] (-4,-2) grid (4,2);
+	%\draw [->,red!20] (-4,0) -- (4,0);
+	%\draw [->,red!20] (0,-2) -- (0,2);
+
+	%\foreach \x in {-4,...,4} {
+	%  \node[below=2pt] at (\x, 0) {\tiny $\x$};
+	%}
+	%\foreach \x in {-2,-1,1,2} {
+	%  \node[right=2pt] at (0, \x) {\tiny $\x$};
+	%}
+	
+	% w_t
+	\node[word] (w_t) at (-3,0) {$w_t$};
+	\node[word] (sum) at (1.0, 2.5) {$\sum$};
+	
+	% p(w_t|W)
+	\node[empword] (w_0) at (-1,0) {$\vdots$};
+	\draw [arrow,anchor=west] (w_t) -- (w_0.west);
+	\draw [arrow,anchor=east] (w_0.east) -- (sum.west);
+
+	\foreach \y/\text in {-2/$w_0$, -1/$w_1$, 1/$w_{v-2}$, 2/$w_{v-1}$} {
+	  \node[empword] (w_\y) at (-1,\y) {$\hat{p}$(\text|$w_t$)};
+	  \draw [arrow,anchor=west] (w_t) -- (w_\y.west);
+	  \draw [arrow,anchor=east] (w_\y.east) -- (sum.west);
+	}
+
+	\node[empword] (w_1) at (-1,1) {$\hat{p}(w_{v-2}|w_t)$};
+	
+	\node[word] (div) at (1, 1) {$\div$};
+	\node[word] (norm) at (2.5, 1) {$p(w_{v-1}|w_t}$};
+	\draw [arrow] (w_1) -- (div);
+	\draw [arrow] (sum) -- (div);
+	\draw [arrow] (div) -- (norm);
+      \end{tikzpicture}
+    #+END_SRC
+
+    [[file:word2vec/softmax.png]]
+
+    接下来讲到的几个优化技巧中，有两个就是针对这一项进行展开。
+
+** hierarchical softmax 
+    原始softmax的计算过程是一个扁平决策的过程，而 ~hierarchical softmax~ 使用的是决策树。
+    
+    其计算模型如下图所示
+
+    #+NAME: hierarchical-softmax
+    #+HEADER: :headers '("\\usepackage{tikz}" "\\usepackage{xeCJK}" "\\usetikzlibrary{arrows.meta}" "\\usetikzlibrary{positioning}")
+    #+HEADER: :imagemagick yes
+    #+HEADER: :iminoptions -density 600 :imoutoptions -geometry 800x600 -quality 100
+    #+BEGIN_SRC latex :fit yes :results file link slient :file-ext png :output-dir word2vec :exports none
+      \begin{tikzpicture}[auto, >=Stealth, inner sep=0cm, scale=2.0,
+	word/.style={shape=circle,draw=blue!50,thick,minimum size=1.2cm,font=\scriptsize},
+	leafword/.style={word,shape=rectangle,minimum size=0.8cm},
+	empword/.style={word,fill=blue!25,very thick,draw=red},
+	arrow/.style={<-,gray!81}
+	]
+
+	% axis grid
+	%\draw[step=0.5cm,color=gray!20,dashed] (-3,-4) grid (3,4);
+	%\draw [->,red!20] (-4,0) -- (4,0);
+	%\draw [->,red!20] (0,-3) -- (0,3);
+
+	%\foreach \x in {-3,...,3} {
+	%  \node[below=2pt] at (\x, 0) {\tiny $\x$};
+	%}
+	%\foreach \x in {-4,...,4} {
+	%  \node[right=2pt] at (0, \x) {\tiny $\x$};
+	%}
+
+	% w_t
+	\node[word] (w_t) at (-4.5,0) {$w_t$};
+
+	% root
+	\node[empword] (u_0) at (-3,0) {$\sigma(u_0 w_t)$} edge[arrow] (w_t);
+
+	% level1
+	\node[word] (u_1) at (-2,-2) {$\sigma(u_1 w_t)$} edge[arrow] node[sloped,below=3pt] {0} (u_0);
+	\node[empword] (u_2) at (-2, 2) {$\sigma(u_2 w_t)$} edge[arrow, very thick,red] node[sloped,above=3pt] {1} (u_0);
+
+	% level2
+	\node[word] (u_3) at (-1,-3) {$\sigma(u_3 w_t)$} edge[arrow] node[sloped,below=3pt] {0} (u_1);
+	\node[word] (u_4) at (-1,-1) {$\sigma(u_4 w_t)$} edge[arrow] node[sloped,above=3pt] {1} (u_1);
+	\node[empword] (u_5) at (-1, 1) {$\sigma(u_5 w_t)$} edge[arrow,very thick,red] node[sloped,above=3pt] {0} (u_2);
+	\node[word] (u_6) at (-1, 3) {$\sigma(u_6 w_t)$} edge[arrow] node[sloped,below=3pt] {1} (u_2);
+
+	% level3
+	\node[leafword] (u_7) at (0,0) {$w_{i}$} edge[arrow,very thick,red] node[sloped,below=3pt] {0} (u_5);
+	\node[leafword] (u_8) at (0,2) {$w_{i+1}$} edge[arrow] node[sloped,above=3pt] {1} (u_5);
+
+	\foreach \i/\text in {0,...,6} {
+	  \node[above=3pt] at (u_\i.north) {$n_\text$};
+	}
+
+	\foreach \i/\text in {3,4,6} {
+	  \node[right=10pt] at (u_\i.east) {$\cdots$};
+	}
+      \end{tikzpicture}
+    #+END_SRC
+
+    [[file:word2vec/hierarchical-softmax.png]]
+
+    词表中的每个单词都对应决策树中的一个叶子节点(图中的方框), 每个中间节点(图中的圆圈) 对应有一个向
+    量 $\mathbf{u}$ , 将输入 $\mathbf{w}_t$ 和 $\mathbf{u}$ 点积之后，输入 ~sigmoid~ 做一个二分类，
+    如果小于0.5， 走左子树，否则走右子树。重复上述过程，直到抵达叶子节点。 
+    
+    在训练过程中，由于目标单词 $w_i$ 是已知的，那么从根节点到 $w_i$ 的路径(图中的加粗路
+    径)就是已知的，对于任何一个输入, 如果构造的树是完全二叉树，则只需要计算 $log_2\ V$ 次即可， 而不
+    是原始 softmax 中的 $V$ 次。关于这棵二叉树的构造下一节会做进一步展开。
+    
+    由于 ~hierarchical softmax~ 修改了之前的 ~loss~ 计算，因此参数更新方式也要做相应调整。
+
+    假设目标单词 $w_i$ 对应的路径为 $\pi_{i} = \{n_0, n_1, \cdots, n_M\}$ , 对应的每个节点的的标签
+    (走左子树还是右子树)为 $L_i = \{l_0, l_1, \cdots, l_M\}, l_i \in \{0,1\}$ , 那么，对于路径上的每
+    一个节点 $n_i$ , 有 
+
+    \begin{equation} \label{eq-sigmoid}
+      \begin{array}{rcl}
+      p(n_i|w_t) & = & \Bigg\{\begin{array}{cr}
+			     \frac{1}{1 + e^{-u_{i} \cdot w_{t}}}, & \quad l_{i} = 1 \\
+			     \\
+			     1 - \frac{1}{1 + e^{-u_{i} \cdot w_{t}}}, & \quad l_{i} = 0
+			   \end{array} \\
+		 \\    
+		 & = & \left( \frac{1}{1 + e^{-u_{i} \cdot w_{t}}} \right)^{l_{i}}
+		       \left( 1 - \frac{1}{1 + e^{-u_{i} \cdot w_{t}}} \right)^{1-l_{i}} \\
+	\\
+		 & = & \sigma(u_{j} \cdot w_{t})^{l_{i}}
+		       \times
+		       \left(1 - \sigma(u_{j} \cdot w_{t})\right)^{1-l_{i}}
+	\end{array}
+    \end{equation}
+    
+    据此可以得到对应的 ~loss~ 函数:
+	\begin{equation} \label{eq-hsm-loss}
+	  \begin{array}{rcl}
+	    p(w_{i}|w_{t}) & = & \prod\limits_{j=0}^{M} p(n_{j}|w_{t}) \\
+	    \\
+	    \mathcal{L(w_{i})} & = & -log\ p(w_{i}|w_{t}) \\
+			   & = & -\sum\limits_{j=0}^{M}
+				 l_{j} \cdot log\ \sigma(u_{j} \cdot w_{t})
+				 +
+				 (1-l_{j}) \cdot log\ \left[1 - \sigma(u_{j} \cdot w_{t}) \right] \\
+	  \end{array}
+	\end{equation}
+	
+    结合 ~sigmoid~ 函数的梯度计算
+
+    \begin{equation*} 
+      \begin{array}{rclcl}
+	\sigma^{'}(x) & = & \sigma(x) \cdot \left( 1 - \sigma(x) \right) \\
+	\\
+	\partial log \sigma(x) / \partial x & = & 1- \sigma(x) \\
+	\\
+	\partial log\ \left( 1-\sigma(x) \right) / \partial x  & = & \frac{1}{1-\sigma(x)}
+									  \cdot -1 \cdot
+									  \sigma(x) \cdot \left[ 1 - \sigma(x) \right] & = & -\sigma(x) \\
+      \end{array}
+    \end{equation*}
+    
+    可以得到对应的梯度
+    
+    \begin{equation*}
+      \begin{array}{rclcl}
+	\frac{\partial \mathcal{L}(w_{i})}{ \partial w_{i}} & = & -\sum\limits_{j=0}^{M}
+							   l_{j} \cdot \left[ 1- \sigma(u_{j} \cdot w_{t}) \right]
+							   +
+								  (1-l_{j}) \cdot - \sigma(u_{j} \cdot w_{t}) 
+							    & = & -\sum\limits_{j=0}^{M}
+								  \left[
+								  l_{i} - \sigma(u_{j} \cdot w_{t}) 
+								  \right] \cdot u_{j} \\
+	\\
+	\frac{\partial \mathcal{L}(w_{i})}{ \partial u_{j}} & = & -\left[
+								  l_{j} - \sigma(u_{j} \cdot w_{t}) 
+								  \right] \cdot w_{t}
+      \end{array}
+    \end{equation*}
+    
+    ~word2vec~ 源码中使用的更新公式和上面有一些差异，主要是因为式 [[ref:eq-sigmoid]] 中的 ~label~ 和
+    ~word2vec~ 的恰好反过来，如果要保持一致的话，使用 $1-l_j$ 替换上述式子中的 $l_j$ , 即可得到和
+    ~word2vec~ 源码中一样的结果。
+    
+** Huffman编码
+    上一节在分析 ~hierarchical softmax~ 的时候，使用的决策树是一颗完全二叉树，也就是所有单词无差别对
+    待，全部分布在树的最后一层或倒数第二层的右边，如果将每个单词出现的概率作为其权重，那么可以得到一
+    个 [[https://baike.baidu.com/item/%E5%93%88%E5%A4%AB%E6%9B%BC%E6%A0%91][带权二叉树]]，其带权路径长度为 $log V$ 。这棵树可以进一步优化得到带权路径最小的 ~Huffman~ 树，
+    也成为最优二叉树。
+    
+    关于带权二叉树的细节这里不做展开，细节可以参考 [[https://baike.baidu.com/item/%E5%93%88%E5%A4%AB%E6%9B%BC%E6%A0%91][百度百科]] 。其构建方式如下:
+
+    - 将所有单词作为一棵树，组成森林 $\mathcal{F} = \{t_0, t_1, \cdots, t_V\}$
+    - 从 $\mathcal{F}$ 中挑选权重最小的两棵树 $t_i, t_j$, 将其从 $\mathcal{F}$ 中移除
+    - 新建一棵树 $\hat{t}$ , 其左右子树分别为上面挑选出来的为 $t_i, t_j$
+    - 将 $\hat{t}$ 添加到 $\mathcal{F}$ 中
+    - 重复上面三步，直到 $\mathcal{F}$ 中只剩下一棵树，即为最终的 ~Huffman~ 树。
+      
+    完成 ~Huffman~ 树构建之后，其他的计算过程和上一节的完全一样。
+     
+** 交叉熵
+    为了分析接下来的负采样技术，我们先换一个角度来看 ~loss~ 函数, 以 ~CBOW~ 为例。
+
+    \begin{equation*}
+      \mathcal{J}(w_{t}, \Theta) = -\frac{1}{T} \sum\limits_{t=M}^{t=T-M} log\ p(w_{t}|h_{t})
+    \end{equation*}
+    
+    也就是使用某种方式计算出目标单词的概率 $p(w_t|\cdot)$ , 然后取 ~log~ , 最后在整个语料上取一个平
+    均。 ~skip-gram~ 的 ~loss~ 函数也是这个形式，只不过里面有多个求和项(基于当前单词预测窗口内多个单
+    词)。
+
+    前面在分析的时候，对概率 $p(w_t|\cdot)$ 取 ~log~ 的原因是:
+    - 方便计算，将连乘转换成求和
+    - 避免数值计算中的精度丢失或者溢出问题
+
+    下面将从信息论的角度来解释这么做的目的。
+    
+    *[[https://baike.baidu.com/item/%E7%86%B5/19190273][熵]]* 用来表示一个系统内在的混乱程度或者不确定性程度，熵越大，混乱程度越高，说明这个系统越不稳定。
+    反之则说明这个系统越稳定。
+
+    *[[https://baike.baidu.com/item/%E4%BF%A1%E6%81%AF%E7%86%B5][信息熵]]* 在信息论中，信息熵表示的是信息的不确定性，熵越大，信息越不确定，熵越小， 信息越确定。其
+    计算公式如下: 
+    
+    \begin{equation*}
+      H(x) = \sum_{i} q(x_{i}) \cdot log\ \frac{1}{q(x_{i})} = - \sum_{i} q(x_{i}) \cdot log\ q(x_{i})
+    \end{equation*}
+
+    $\mathbf{X}$ 表示一个随机变量，$x_i$ 表示其特定的取值, $q(x_i)$ 表示对应取值发生的概率。
+    
+    比如,  $x = 0$ 表示太阳明天不会升起, $x=1$ 表示太阳明天不会升起，那么，在我们这个世界有 
+    $q(x_0) = 0, q(x_1) = 1, H(x) = 0 \cdot log 0 + 1 \cdot log 1$ , 也就是 $\mathbf{X}$ 这个随机变量的不确定性为0。 
+    
+    从概率分布的角度来说， $q(x_i)$ 称之为真实分布，很多时候，我们并不知道真实分布, 而是通过另外一个
+    分布来拟合这个真实分布，这个拟合分布记作 $p(x_i)$ ，那么，可以通过 [[https://baike.baidu.com/item/%E7%9B%B8%E5%AF%B9%E7%86%B5][KL散度/相对熵]] 来度量这个拟合的逼近程度:
+
+    \begin{equation*}
+      \begin{array}{rcl}
+	KL(q,p) & = & \sum_{i} q(x_{i}) \cdot log\ \frac{q(x_{i})}{p(x_{i})} \\
+	\\
+	       & = & \sum_{i} \left[ q(x_{i}) \cdot log\ q(x_{i})  - q(x_{i}) \cdot log\ p(x_{i}) \right] \\
+	\\
+	       & = & -H(p) - \sum_{i} q(x_{i}) \cdot log\ p(x_{i})
+      \end{array}
+    \end{equation*}
+
+
+    KL 散度越小，说明两个分布越接近。上式中第一项是 ~q~ 分布的熵， 这一样不会因为 ~p~ 改变而改变，而
+    我们的目标是得到 ~p~ 分布，因此第一项可以忽略，优化目标简化如下:
+    
+    \begin{equation*}
+      \mathop{\arg\min}_{p}\ - \sum_{i}q(x_{i}) \cdot log \ p(x_{i})
+    \end{equation*}
+
+    其中的 $q(x_i) \cdot log\ p(x_i)$ 叫做 [[https://baike.baidu.com/item/%E4%BA%A4%E5%8F%89%E7%86%B5/8983241][交叉熵]] 。 可以看到， ~loss~ 函数相对于上面的交叉熵少了一
+    个求和项，接下来说明两者是等价的。 
+    
+    由上面的分析可以知道，$q(x_i)$ 是真实概率分布，$p(x_i)$ 是拟合的概率分布, 对应 ~skip-gram~
+    中的 $p(w_j|w_i)$, ~CBOW~ 中的 $p(w_t|h_t)$ , 而真实分布是不知道的, 因为如果知道的话，就不用拟合，
+    直接拿过来用就是了， 所以只能根据统计学，使用实际观测到的值来模拟, 也就是当前时刻观察到哪个单词，
+    其概率就是1, 其他的单词出现的概率都是0, 也即 $p(w_t) = 1,\ p(w_{t^{'}}, t^{'} \neq t) = 0$ , 对
+    应的分布向量称为 ~one-hot~ 向量。由此可得:
+    
+    \begin{equation*}
+      \begin{array}{rcl} 
+	-\sum_{i} q(x_{i}) \cdot log\ p(w_{i}|h_{t}) & = & - 1 \cdot log\ p(w_{t}|h_{t}) - \sum_{i, i\neq t} 0 \cdot log\ p(w_{i}|h_{t}) \\
+						     & = & - log\ p(w_{t}|h_{t})
+      \end{array}
+    \end{equation*}
+    
+    这是给定一个单词对应的 ~loss~ , 如果在整个句子上求平均，正好是 [[eqref:eq-cbow-loss]] 。所以，[[eqref:eq-cbow-loss]]
+    实际上计算的就是交叉熵。
+
+** negative sampling
+    上面的分析给出了 ~softmax loss~ 函数的本质:
+    
+    #+BEGIN_EXAMPLE
+    给定一个 one-hot 分布，计算输出的概率分布p和其逼近程度
+    #+END_EXAMPLE
+    
+    ~hierarchical softmax~ 优化没有改变其本质，只不过利用了 ~one-hot~ 这个特性，将原本需要 $V$ 次计
+    算的 $p(w_t|\cdot)$ 层次化为 $log V$ 次计算，如果所有计算所有的 $p(w_{t^{'}})$ , 那么还是需要 $V$
+    次计算。
+    
+    ~negative sampling(NEG)~, 或者说负采样技术，则另辟蹊径来解决 ~softmax~ 的计算问题。其理论依据是
+    cite:gutmann-2012-noise-contr 中提出的 ~NCE~ , 后在 cite:mnih-2012-fast-simpl 中被用到语言模型的训练中。
+    细节这里暂且不表，具体做法是:
+ 
+    1. 对于每个目标单词 $w_t$ , 根据某个特定的分布 $P_n(w_t)$ , 采样得到一个负例集合 $C_t = \{c_1, c_2, \cdots, c_K\}, c_i
+         \neq w_t$
+    2. 训练模型区分 $\{w_t\} \bigcup C_t$ 这个集合中的元素是否是 $w_t$
+
+    cite:mnih-2012-fast-simpl 中给出的 ~loss~ 函数计算比较比较复杂， ~word2vec~ 作者在
+    cite:mikolov-2013-distr-repres 中指出，由于 ~word2vec~ 只是为了训练得到词的向量表示，并不需要
+    训练得到语言模型，因此可以简化如下:
+    
+    \begin{equation} \label{eq-negative-sampling-loss}
+      \begin{array}{rcl}
+	\mathcal{L} & = & log\ \sigma(h_{t} \cdot w_{t}) + \sum\limits_{i=1}^{K} \mathbb{E}_{w_{i} \sim P_{n}(w)}\left[ log\ \sigma(-h_{t} \cdot c_{i})\right]
+      \end{array}
+    \end{equation}
+
+    其中，$P_{n}(w)$ 为 ~unigram~ ，并且对其中高频项使用了一个指数惩罚项，也就是 
+
+    \begin{equation*}
+      P_{n}(w_{t}) = \frac{1}{Z} \cdot cnt(w_{t})^{3/4}
+    \end{equation*}
+    
+    $Z$ 为语料中的总的词数，$cnt(w_t)$ 为 $w_t$ 在语料中出现的次数。
+    
+    [[eqref:eq-negative-sampling-loss]] 看起来有点陌生，实际上是老熟人了, 由 ~sigmod~ 决策公式 [[eqref:eq-sigmoid]] 可知
+    
+    \begin{equation*}
+      \mathcal{L}(x) = l \cdot log\ \sigma(x) + (1 - l) \cdot log\ \left[1 - \sigma(x)\right]
+    \end{equation*}
+    
+    注意到
+
+    \begin{equation*}
+      1 - \sigma(x)  \ =\   1 - \frac{1}{1+e^{-x}}  \ =\    \frac{e^{-x}}{1+e^{-x}}  \ =\   \frac{1}{e^{x}+1}  \ =\   \sigma(-x)
+    \end{equation*}
+    
+    所以有
+
+    \begin{equation*}
+      \mathcal{L}(x) = l \cdot log\ \sigma(x) + (1 - l) \cdot log\ \sigma(-x)
+    \end{equation*}
+    
+    根据上面 ~NEG~ 的做法描述可知，目标单词 $w_t$ 对应的标签为 $l = 1$ ，对应的 $\mathcal{L}(x)$ 中第二项为
+    零， 负样本 $c_i$ 对应的标签 $l_i = 0$ ， 对应的 $\mathcal{L}(x)$ 中的第一项为0, 因此可以得到:
+
+    \begin{equation*} 
+      \begin{array}{rcl}
+	\mathcal{L} & = & \mathcal{L}(h_t \cdot w_t) + \sum\limits_{i=1}^{K} \mathbb{E}_{w_{i} \sim P_{n}(w)} \mathcal{L}(h_t \cdot c_i) \\
+	\\
+		    & = & log\ \sigma(h_{t} \cdot w_{t})
+			  +
+			  \sum\limits_{i=1}^{K} \mathbb{E}_{w_{i} \sim P_{n}(w)} log\ \sigma(- h_{t} \cdot c_{i})
+      \end{array}
+    \end{equation*}
+
+    正好就是 [[eqref:eq-negative-sampling-loss]] 。 
+
+    也就是说， ~NEG~ 实际上是将一个 $V$ 分类问题转换成 $K+1$ 个二分类问题，一般来说， $K \ll V$ ，从而解决了计算量的问题。
+    
+    关于 ~NEG~ , 有下面两点需要注意:
+    1. 相比于 ~hierarchical softmax~, ~NEG~ 可以提高模型的准确率
+    2. ~NCE~ 可以用于语言模型训练，而 ~NEG~ 只能用于词向量训练，不可用于语言模型训练
+
+    更详细的讨论，可以参考 cite:dyer-2014-notes-noise , 以及 ~tensorflow~ 中 [[https://www.tensorflow.org/extras/candidate_sampling.pdf][candidate sampling]] 文档,
+    后面准备单开一篇 blog 来做深入学习。 
+
+** sub-sampling
+    ~sub-sampling~ 技术, 主要是为了解决前面共现矩阵面临的同样问题，就是语料中某些词语的频率远高于其
+    它词，在一定程度上会影响词向量的训练。因此在训练过程中，会根据某个词出现的频率高低，按照一定的概
+    率将其从语料中丢掉, 有点类似于 ~maked language model~ 。paper 中给出的对于单词 $w_i$ ， 其在训
+    练中被扔掉的概率是
+    
+    \begin{equation*}
+      p(w_{i}) = 1 - \sqrt{t/f_{w_{i}}}
+    \end{equation*}
+    
+    其中 $f_{w_i}$ 为 $w_i$ 在整个语料中出现的概率, $t$ 为一个给定的阈值，paper中的默认值是 $1e-5$ ,
+    $f_{w_i} < t$ 的单词不会被扔掉。$f_{w_i}$ 越大，被扔掉的概率越大。
+    
+    代码中实际使用的和 paper 中有些差异:
+    
+    \begin{equation*}
+      p(w_{i}) = 1 - t/f_{w_{i}} - \sqrt{t/f_{w_{i}}}
+    \end{equation*}
+    
+    也就是 $f_{w_i} \leq \frac{\sqrt{5}+1}{2} \cdot t$ 的时候不会被扔掉, $s$ 默认取值是 $1e-3$ 。 看
+    起来和 paper 中没什么本质差别，至于为什么使用这个, 原因不明。 
+
+** phrase
+    在 cite:mikolov-2013-distr-repres 中，作者还提到了一个点，就是有些专有名词由多个单词组成，但
+    是其意义并非简单的组成它的几个单词的组合，比如， ~New York~ , ~Houston Rockets~ , 这个时候更合理
+    的是将这些作为一个单词对待。对此作者提出了一个简单的 ~data-driven~ 的方法，就是统计语料中所有
+    ~bi-gram~ , 计算得到一个 ~score~ 
+    
+    \begin{equation*}
+      \mathcal{S}(w_{i}, w_{j}) = \frac{ count(w_{i} w_{j}) - \delta } { count(w_{i}) \times count(w_{j}) }
+    \end{equation*}
+    
+    如果 $\mathcal{S}(w_i, w_j)$ 大于给定的某个阈值, 那么将 $w_i, w_j$ 合并为一个单词。重复这个过程 2~4 遍即可。
+
+    不过这个想法只在 paper 中写到了，源码中并没有看到相关实现。
+
+* 总结
+* References
+  bibliography:~/.emacs.d/data/paper/default.bib
+  bibliographystyle:unsrt
+
+* COMMENT word vector 
+** paper
+   1. [[http://www.jmlr.org/papers/volume3/bengio03a/bengio03a.pdf][A neural probabilistic language model]], Bengio, 2003, NNLM 
+      #+begin_note 
+      * left-context language model
+      * concate context word embedding to get input
+      * residual-connection
+      * tanh activation function
+      * tri-gram interpolation
+      * architechture
+	- input: $N$ , 输入层，1-hot
+	- project: $N \times D$, 将单词映射为词向量
+	- hidden: $N \times D \times H$, 转换得到隐层, 这里有一个tanh非线
+	- output: $H \times V$, 得到最终的输出概率分布
+      * train speed
+	- 14 million (13,994,528) words, $\parallel V \parallel = 17964$
+	- 5 epoch, 40CPU, 3weeks
+      #+end_note 
+      
+      *Loss函数*
+      
+      [[./images/begio-03-nnlm.jpg]]
+      为什么没有word2vec有名？差别是什么
+   2. [[https://arxiv.org/abs/1301.3781][Efficient Estimation of Word Representations in Vector Space]]: 原始paper
+      1) 相比于之前的优势: 
+	 * 模型简单
+	 * 可以在大量数据上进行大词表，大数据量的训练
+	 * 词向量表示的语法相似性(之前已经发现): 相同语法的单词倾向于聚集在一起
+	 * 语义计算: 通过简单的减法，计算两个向量的差，可以得到一个语义的表示
+      2) 一个隐层: 可以看做是一个查表
+      3) 没有引入非线性，得到embeding之后，算一个相似度，然后softmax
+      4) skip-gram 比 cbow 在 semantic 任务上的表现要好很多, 因为 skip-gram 需要根据当前的word-vector
+	 去预测上下文, 因此需要捕获尽可能多的上下文信息，也就是语义。而cbow是反过来的，任务没有这么难
+   3. [[https://arxiv.org/abs/1310.4546][Distributed Representations of Words and Phrases and their Compositionality]]: 后继优化
+      - negative sampling: 相对于在整个vocab空间上计算softmax，只需要在采样子空间上进行计算
+      - sub-sampling: 对高频词进行降采样
+   7. NCE(2012) 
+      Noise-contrastive estimation of unnormalized statistical mod- els, with applications to natural image statistics
+   8. code
+      - https://code.google.com/p/word2vec/ 
+      - 上面的原始地址的代码已经无法下载，可以看github上的: https://github.com/dav/word2vec
+	
+** overview
+   1. 不同于传统的离散one-hot特征表示, 使用一组连续向量来表示一个单词: $U_{w} = [x_0, x_1, \cdots,
+      x_H]^{T} \in R^{H}$
+   2. 找到一种评价准则，评价该向量表示质量的好坏
+   3. 基于上述准则, 从大量的数据中学习优化每个词的向量表示
+
+** skip-gram
+*** 测试数据
+    http://www.fit.vutbr.cz/~imikolov/rnnlm/word-test.v1.txt
+*** 评价准则
+   skip-gram 定义的评价准则如下:
+* COMMENT notes
+  1. [[https://www.hankcs.com/nlp/word2vec.html][word2vec原理推导与代码分析]]: 这个网站整体都很赞，值得深读, HanNLP 作者写的
+  2. [[https://www.cnblogs.com/peghoty/p/3857839.html][word2vec中的数学原理详解]] :  写的很详细
+  3. [[https://www.zhihu.com/question/29273081][实现没有加锁的解释]]
+  4. [[https://www.tensorflow.org/extras/candidate_sampling.pdf][tensorflow-candidate sampling]]
+  5. http://mccormickml.com/2016/04/19/word2vec-tutorial-the-skip-gram-model/: tutorial
+  6. http://mccormickml.com/2017/01/11/word2vec-tutorial-part-2-negative-sampling/: 对应第二篇文章，优化训练
+  7. 比较有意思的case，使用word2vec思想学习item embedding 并用于推荐
+     http://mccormickml.com/2018/06/15/applying-word2vec-to-recommenders-and-advertising/
+
+* COMMENT Local Settings
+
+# Local Variables:
+# fill-column: 100
+# org-confirm-babel-evaluate: nil
+# org-image-actual-width: 200px
+# End:

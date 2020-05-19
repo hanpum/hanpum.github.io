@@ -1,0 +1,19 @@
+#+TITLE: C/C++ 笔记
+#+AUTHOR: hanpu.mwx
+#+EMAIL: hanpu.mwx@gmai.com
+#+DATE: <2020-05-09 Sat>
+#+UPDATED: <2020-05-09 Sat>
+#+LATEX_HEADER: \usepackage{xeCJK} 
+#+LATEX_HEADER: \usepackage{natbib}
+#+LATEX_HEADER: \usepackage[version=3]{mhchem}
+#+LATEX_HEADER: \usepackage{makeidx}
+#+LATEX_HEADER: \usepackage{amssymb}
+#+LATEX_HEADER: \makeindex
+#+TAGS: C/C++
+#+CATEGORIES: NOTES
+#+PROPERTY: header-args :output-dir c++
+#+OPTIONS: ^:{}
+
+* 面试题总结
+  1. extern "C" 的作用
+     

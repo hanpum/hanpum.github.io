@@ -64,7 +64,7 @@ footer:
     color: "#ff0000"
 
   # If not defined, `author` from Hexo `_config.yml` will be used.
-  copyright:
+  copyright: hanpu.mwx
 
   # Powered by Hexo & NexT
   powered: true
@@ -117,11 +117,11 @@ darkmode: false
 # External url should start with http:// or https://
 menu:
   home: / || fa fa-home
-  about: /about/ || fa fa-user
+  #about: /about/ || fa fa-user
   tags: /tags/ || fa fa-tags
   categories: /categories/ || fa fa-th
   archives: /archives/ || fa fa-archive
-  schedule: /schedule/ || fa fa-calendar
+  #schedule: /schedule/ || fa fa-calendar
   #sitemap: /sitemap.xml || fa fa-sitemap
   #commonweal: /404/ || fa fa-heartbeat
 
@@ -177,7 +177,7 @@ site_state: true
 # Key is the link label showing to end users.
 # Value before `||` delimiter is the target permalink, value after `||` delimiter is the name of Font Awesome icon.
 social:
-  GitHub: https://github.com/weixingmei || fab fa-github
+  GitHub: https://github.com/hanpum || fab fa-github
   E-Mail: mailto:hanpu.mwx@gmail.com || fa fa-envelope
   #Weibo: https://weibo.com/yourname || fab fa-weibo
   #Google: https://plus.google.com/yourname || fab fa-google
@@ -213,7 +213,7 @@ toc:
   # If true, all words will placed on next lines if header width longer then sidebar width.
   wrap: false
   # If true, all level of TOC in a post will be displayed, rather than the activated part of it.
-  expand_all: false
+  expand_all: true
   # Maximum heading depth of generated toc.
   max_depth: 6
 
@@ -251,9 +251,14 @@ post_meta:
 # Post wordcount display settings
 # Dependencies: https://github.com/theme-next/hexo-symbols-count-time
 symbols_count_time:
+  symbol: true 
+  time: true
+  total_symbol: true 
+  total_time: true
+  exclude_codeblock: true
   separated_meta: true
   item_text_post: true
-  item_text_total: false
+  item_text_total: true
 
 # Use icon instead of the symbol # to indicate the tag at the bottom of the post
 tag_icon: true
@@ -358,11 +363,11 @@ codeblock:
   highlight_theme: normal
   # Add copy button on codeblock
   copy_button:
-    enable: false
+    enable: true
     # Show text copy result.
-    show_result: false
+    show_result: true
     # Available values: default | flat | mac
-    style:
+    style: mac
 
 back2top:
   enable: true
@@ -373,7 +378,7 @@ back2top:
 
 # Reading progress bar
 reading_progress:
-  enable: false
+  enable: true
   # Available values: top | bottom
   position: top
   color: "#37c6c0"
@@ -390,8 +395,8 @@ bookmark:
 
 # `Follow me on GitHub` banner in the top-right corner.
 github_banner:
-  enable: false
-  permalink: https://github.com/yourname
+  enable: true
+  permalink: https://github.com/hanpum
   title: Follow me on GitHub
 
 
@@ -513,11 +518,11 @@ math:
 
 # Easily enable fast Ajax navigation on your website.
 # Dependencies: https://github.com/theme-next/theme-next-pjax
-pjax: false
+pjax: true
 
 # FancyBox is a tool that offers a nice and elegant way to add zooming functionality for images.
 # For more information: https://fancyapps.com/fancybox
-fancybox: false
+fancybox: true
 
 # A JavaScript library for zooming images like Medium.
 # Do not enable both `fancybox` and `mediumzoom`.
