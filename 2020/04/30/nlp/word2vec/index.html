@@ -230,13 +230,13 @@
       
         <div id="content">
 
-<div id="outline-container-org4726dd8" class="outline-2">
-<h2 id="org4726dd8">概述</h2>
-<div class="outline-text-2" id="text-org4726dd8">
+<div id="outline-container-orgd58f374" class="outline-2">
+<h2 id="orgd58f374">概述</h2>
+<div class="outline-text-2" id="text-orgd58f374">
 </div>
-<div id="outline-container-orgfff45b1" class="outline-3">
-<h3 id="orgfff45b1">词向量</h3>
-<div class="outline-text-3" id="text-orgfff45b1">
+<div id="outline-container-org574db9d" class="outline-3">
+<h3 id="org574db9d">词向量</h3>
+<div class="outline-text-3" id="text-org574db9d">
 <p>
 <code>word vector</code>, 从字面意思来理解，就是词向量。也就是使用一个向量来表示一个词, 其好处就是能够使用数
 学语言来描述文字符号，从而可以使用数学工具对齐进行分析。
@@ -261,9 +261,9 @@
 </div>
 </div>
 
-<div id="outline-container-orgf5775fb" class="outline-3">
-<h3 id="orgf5775fb">特征向量</h3>
-<div class="outline-text-3" id="text-orgf5775fb">
+<div id="outline-container-org8233170" class="outline-3">
+<h3 id="org8233170">特征向量</h3>
+<div class="outline-text-3" id="text-org8233170">
 <p>
 特征向量属于特征工程时代的产物，就是人工设计一组特征(一般是离散的), 然后提取对应的特征值得到一组
 向量。比如，假设有如下三个特征维度:
@@ -299,9 +299,9 @@ NLP -> [3,1,0]</pre>
 </div>
 </div>
 
-<div id="outline-container-org0847562" class="outline-3">
-<h3 id="org0847562">共现矩阵</h3>
-<div class="outline-text-3" id="text-org0847562">
+<div id="outline-container-orgb0bd789" class="outline-3">
+<h3 id="orgb0bd789">共现矩阵</h3>
+<div class="outline-text-3" id="text-orgb0bd789">
 <p>
 共现矩阵的依据如下:
 </p>
@@ -334,7 +334,7 @@ all is well that ends well</pre>
 一，于是可以得到如下矩阵:
 </p>
 
-<table id="org0ece1ac" border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+<table id="org8fc0316" border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
 
 
 <colgroup>
@@ -582,9 +582,9 @@ all is well that ends well</pre>
 </div>
 </div>
 
-<div id="outline-container-orgb7814f6" class="outline-3">
-<h3 id="orgb7814f6">任务导向</h3>
-<div class="outline-text-3" id="text-orgb7814f6">
+<div id="outline-container-org0973953" class="outline-3">
+<h3 id="org0973953">任务导向</h3>
+<div class="outline-text-3" id="text-org0973953">
 <p>
 基于任务导向的词向量学习方法和上面的共现矩阵一样，其最基础的依据也是根据单词的上下文来推测其含义。
 不过，实现的方式和共现矩阵却大相径庭，其策略是以终为始, 设计一个或者一组任务，将每个单词或者字映
@@ -605,9 +605,9 @@ glove (<a class="org-ref-reference" href="#pennington-2014-glove">pennington-201
 </div>
 </div>
 
-<div id="outline-container-org2925177" class="outline-2">
-<h2 id="org2925177">设计思路</h2>
-<div class="outline-text-2" id="text-org2925177">
+<div id="outline-container-org2a92ec5" class="outline-2">
+<h2 id="org2a92ec5">设计思路</h2>
+<div class="outline-text-2" id="text-org2a92ec5">
 <p>
 word2vec 于 13 年在 <a class="org-ref-reference" href="#mikolov-2013-effic-estim">mikolov-2013-effic-estim</a>,<a class="org-ref-reference" href="#mikolov-2013-distr-repres">mikolov-2013-distr-repres</a> 这两篇 paper 中提出来
 的。其主要设计思路如上面所说，就是使用单词周围的单词来预测给定单词的概率，依实现方式可以分为
@@ -616,13 +616,13 @@ word2vec 于 13 年在 <a class="org-ref-reference" href="#mikolov-2013-effic-es
 </div>
 </div>
 
-<div id="outline-container-org6a65463" class="outline-2">
-<h2 id="org6a65463">skip-gram</h2>
-<div class="outline-text-2" id="text-org6a65463">
+<div id="outline-container-orga843fe7" class="outline-2">
+<h2 id="orga843fe7">skip-gram</h2>
+<div class="outline-text-2" id="text-orga843fe7">
 </div>
-<div id="outline-container-orgeafbff2" class="outline-3">
-<h3 id="orgeafbff2">目标函数</h3>
-<div class="outline-text-3" id="text-orgeafbff2">
+<div id="outline-container-org352a657" class="outline-3">
+<h3 id="org352a657">目标函数</h3>
+<div class="outline-text-3" id="text-org352a657">
 <p>
 给定一个句子 \(S = [w_0, w_1, \cdots, w_T]\), 以及句子中的一个位置 \(t, t \in [0, T]\) , \(S_t\) 表示位
 置 \(t\) 处的单词，skip-gram的目标是 通过 \(S_t\) 来预测其周围单词出现的概率。
@@ -686,9 +686,9 @@ word2vec 于 13 年在 <a class="org-ref-reference" href="#mikolov-2013-effic-es
 </div>
 </div>
 
-<div id="outline-container-orgc3a2a4d" class="outline-3">
-<h3 id="orgc3a2a4d">条件概率</h3>
-<div class="outline-text-3" id="text-orgc3a2a4d">
+<div id="outline-container-org683bb72" class="outline-3">
+<h3 id="org683bb72">条件概率</h3>
+<div class="outline-text-3" id="text-org683bb72">
 <p>
 为了描述方面，上面 \(w_t, w_{t+i}\) 表示的是一个具体的单词，由于每个单词都对应一个向量，所以 \(\mathbf{w_t},
    \mathbf{w_{t+i}}\) 也可以等价为对应的向量，以后都按照这种方式来表示。
@@ -771,9 +771,9 @@ word2vec 于 13 年在 <a class="org-ref-reference" href="#mikolov-2013-effic-es
 </div>
 </div>
 
-<div id="outline-container-org80e3e00" class="outline-3">
-<h3 id="org80e3e00">优化公式</h3>
-<div class="outline-text-3" id="text-org80e3e00">
+<div id="outline-container-org591c30f" class="outline-3">
+<h3 id="org591c30f">优化公式</h3>
+<div class="outline-text-3" id="text-org591c30f">
 <p>
 给出了 <code>loss</code> 函数之后，使用梯度下降算法进行优化即可, 先计算梯度
 </p>
@@ -901,13 +901,13 @@ cs224n 中给出的答案是简单的将其做一个平均得到最终的向量�
 </div>
 </div>
 
-<div id="outline-container-org46fe6c5" class="outline-2">
-<h2 id="org46fe6c5">CBOW</h2>
-<div class="outline-text-2" id="text-org46fe6c5">
+<div id="outline-container-orgf103723" class="outline-2">
+<h2 id="orgf103723">CBOW</h2>
+<div class="outline-text-2" id="text-orgf103723">
 </div>
-<div id="outline-container-orgf2fd41b" class="outline-3">
-<h3 id="orgf2fd41b">目标函数</h3>
-<div class="outline-text-3" id="text-orgf2fd41b">
+<div id="outline-container-org22ea5ef" class="outline-3">
+<h3 id="org22ea5ef">目标函数</h3>
+<div class="outline-text-3" id="text-org22ea5ef">
 <p>
 和 <code>skip-gram</code> 相比， <code>cbow</code> 的模型架构更接近传统意义的神经网络。
 </p>
@@ -951,13 +951,13 @@ cs224n 中给出的答案是简单的将其做一个平均得到最终的向量�
 </div>
 </div>
 
-<div id="outline-container-orgf590d35" class="outline-2">
-<h2 id="orgf590d35">具体实现</h2>
-<div class="outline-text-2" id="text-orgf590d35">
+<div id="outline-container-org9cf9373" class="outline-2">
+<h2 id="org9cf9373">具体实现</h2>
+<div class="outline-text-2" id="text-org9cf9373">
 </div>
-<div id="outline-container-orgd174016" class="outline-3">
-<h3 id="orgd174016">overview</h3>
-<div class="outline-text-3" id="text-orgd174016">
+<div id="outline-container-orgb28792c" class="outline-3">
+<h3 id="orgb28792c">overview</h3>
+<div class="outline-text-3" id="text-orgb28792c">
 <p>
 本节讲一下 <a class="org-ref-reference" href="#mikolov-2013-distr-repres">mikolov-2013-distr-repres</a> 中提到的一些优化技巧。
 </p>
@@ -989,9 +989,9 @@ cs224n 中给出的答案是简单的将其做一个平均得到最终的向量�
 </div>
 </div>
 
-<div id="outline-container-org2a26d3d" class="outline-3">
-<h3 id="org2a26d3d">hierarchical softmax</h3>
-<div class="outline-text-3" id="text-org2a26d3d">
+<div id="outline-container-org1098d9e" class="outline-3">
+<h3 id="org1098d9e">hierarchical softmax</h3>
+<div class="outline-text-3" id="text-org1098d9e">
 <p>
 原始softmax的计算过程是一个扁平决策的过程，而 <code>hierarchical softmax</code> 使用的是决策树。
 </p>
@@ -1105,9 +1105,9 @@ cs224n 中给出的答案是简单的将其做一个平均得到最终的向量�
 </div>
 </div>
 
-<div id="outline-container-org7eff40e" class="outline-3">
-<h3 id="org7eff40e">Huffman编码</h3>
-<div class="outline-text-3" id="text-org7eff40e">
+<div id="outline-container-org58391ab" class="outline-3">
+<h3 id="org58391ab">Huffman编码</h3>
+<div class="outline-text-3" id="text-org58391ab">
 <p>
 上一节在分析 <code>hierarchical softmax</code> 的时候，使用的决策树是一颗完全二叉树，也就是所有单词无差别对
 待，全部分布在树的最后一层或倒数第二层的右边，如果将每个单词出现的概率作为其权重，那么可以得到一
@@ -1133,9 +1133,9 @@ cs224n 中给出的答案是简单的将其做一个平均得到最终的向量�
 </div>
 </div>
 
-<div id="outline-container-org6b602fd" class="outline-3">
-<h3 id="org6b602fd">交叉熵</h3>
-<div class="outline-text-3" id="text-org6b602fd">
+<div id="outline-container-org0ca17be" class="outline-3">
+<h3 id="org0ca17be">交叉熵</h3>
+<div class="outline-text-3" id="text-org0ca17be">
 <p>
 为了分析接下来的负采样技术，我们先换一个角度来看 <code>loss</code> 函数, 以 <code>CBOW</code> 为例。
 </p>
@@ -1237,9 +1237,9 @@ KL 散度越小，说明两个分布越接近。上式中第一项是 <code>q</c
 </div>
 </div>
 
-<div id="outline-container-org2103a6e" class="outline-3">
-<h3 id="org2103a6e">negative sampling</h3>
-<div class="outline-text-3" id="text-org2103a6e">
+<div id="outline-container-orgf8acf27" class="outline-3">
+<h3 id="orgf8acf27">negative sampling</h3>
+<div class="outline-text-3" id="text-orgf8acf27">
 <p>
 上面的分析给出了 <code>softmax loss</code> 函数的本质:
 </p>
@@ -1351,9 +1351,9 @@ KL 散度越小，说明两个分布越接近。上式中第一项是 <code>q</c
 </div>
 </div>
 
-<div id="outline-container-orgd7c34a2" class="outline-3">
-<h3 id="orgd7c34a2">sub-sampling</h3>
-<div class="outline-text-3" id="text-orgd7c34a2">
+<div id="outline-container-org517ee99" class="outline-3">
+<h3 id="org517ee99">sub-sampling</h3>
+<div class="outline-text-3" id="text-org517ee99">
 <p>
 <code>sub-sampling</code> 技术, 主要是为了解决前面共现矩阵面临的同样问题，就是语料中某些词语的频率远高于其
 它词，在一定程度上会影响词向量的训练。因此在训练过程中，会根据某个词出现的频率高低，按照一定的概
@@ -1385,9 +1385,9 @@ KL 散度越小，说明两个分布越接近。上式中第一项是 <code>q</c
 </div>
 </div>
 
-<div id="outline-container-org2e742bf" class="outline-3">
-<h3 id="org2e742bf">phrase</h3>
-<div class="outline-text-3" id="text-org2e742bf">
+<div id="outline-container-org95483ce" class="outline-3">
+<h3 id="org95483ce">phrase</h3>
+<div class="outline-text-3" id="text-org95483ce">
 <p>
 在 <a class="org-ref-reference" href="#mikolov-2013-distr-repres">mikolov-2013-distr-repres</a> 中，作者还提到了一个点，就是有些专有名词由多个单词组成，但
 是其意义并非简单的组成它的几个单词的组合，比如， <code>New York</code> , <code>Houston Rockets</code> , 这个时候更合理
@@ -1410,12 +1410,12 @@ KL 散度越小，说明两个分布越接近。上式中第一项是 <code>q</c
 </div>
 </div>
 
-<div id="outline-container-orgb2a72cf" class="outline-2">
-<h2 id="orgb2a72cf">总结</h2>
+<div id="outline-container-org8be7735" class="outline-2">
+<h2 id="org8be7735">总结</h2>
 </div>
-<div id="outline-container-org81dc8b1" class="outline-2">
-<h2 id="org81dc8b1">References</h2>
-<div class="outline-text-2" id="text-org81dc8b1">
+<div id="outline-container-org21e5bc4" class="outline-2">
+<h2 id="org21e5bc4">References</h2>
+<div class="outline-text-2" id="text-org21e5bc4">
 <p>
 
 <ul class="org-ref-bib"><li><a id="pennington-2014-glove">[pennington-2014-glove]</a> <a name="pennington-2014-glove"></a>Jeffrey Pennington, Richard Socher, & Christopher Manning, Glove: Global Vectors for Word Representation, nil, in in: Proceedings of the 2014 Conference on Empirical
@@ -1515,7 +1515,7 @@ KL 散度越小，说明两个分布越接近。上式中第一项是 <code>q</c
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#org4726dd8"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#orgfff45b1"><span class="nav-number">1.1.</span> <span class="nav-text">词向量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#orgf5775fb"><span class="nav-number">1.2.</span> <span class="nav-text">特征向量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#org0847562"><span class="nav-number">1.3.</span> <span class="nav-text">共现矩阵</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#orgb7814f6"><span class="nav-number">1.4.</span> <span class="nav-text">任务导向</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#org2925177"><span class="nav-number">2.</span> <span class="nav-text">设计思路</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#org6a65463"><span class="nav-number">3.</span> <span class="nav-text">skip-gram</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#orgeafbff2"><span class="nav-number">3.1.</span> <span class="nav-text">目标函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#orgc3a2a4d"><span class="nav-number">3.2.</span> <span class="nav-text">条件概率</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#org80e3e00"><span class="nav-number">3.3.</span> <span class="nav-text">优化公式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#org46fe6c5"><span class="nav-number">4.</span> <span class="nav-text">CBOW</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#orgf2fd41b"><span class="nav-number">4.1.</span> <span class="nav-text">目标函数</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#orgf590d35"><span class="nav-number">5.</span> <span class="nav-text">具体实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#orgd174016"><span class="nav-number">5.1.</span> <span class="nav-text">overview</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#org2a26d3d"><span class="nav-number">5.2.</span> <span class="nav-text">hierarchical softmax</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#org7eff40e"><span class="nav-number">5.3.</span> <span class="nav-text">Huffman编码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#org6b602fd"><span class="nav-number">5.4.</span> <span class="nav-text">交叉熵</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#org2103a6e"><span class="nav-number">5.5.</span> <span class="nav-text">negative sampling</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#orgd7c34a2"><span class="nav-number">5.6.</span> <span class="nav-text">sub-sampling</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#org2e742bf"><span class="nav-number">5.7.</span> <span class="nav-text">phrase</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#orgb2a72cf"><span class="nav-number">6.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#org81dc8b1"><span class="nav-number">7.</span> <span class="nav-text">References</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#orgd58f374"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#org574db9d"><span class="nav-number">1.1.</span> <span class="nav-text">词向量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#org8233170"><span class="nav-number">1.2.</span> <span class="nav-text">特征向量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#orgb0bd789"><span class="nav-number">1.3.</span> <span class="nav-text">共现矩阵</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#org0973953"><span class="nav-number">1.4.</span> <span class="nav-text">任务导向</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#org2a92ec5"><span class="nav-number">2.</span> <span class="nav-text">设计思路</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#orga843fe7"><span class="nav-number">3.</span> <span class="nav-text">skip-gram</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#org352a657"><span class="nav-number">3.1.</span> <span class="nav-text">目标函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#org683bb72"><span class="nav-number">3.2.</span> <span class="nav-text">条件概率</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#org591c30f"><span class="nav-number">3.3.</span> <span class="nav-text">优化公式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#orgf103723"><span class="nav-number">4.</span> <span class="nav-text">CBOW</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#org22ea5ef"><span class="nav-number">4.1.</span> <span class="nav-text">目标函数</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#org9cf9373"><span class="nav-number">5.</span> <span class="nav-text">具体实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#orgb28792c"><span class="nav-number">5.1.</span> <span class="nav-text">overview</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#org1098d9e"><span class="nav-number">5.2.</span> <span class="nav-text">hierarchical softmax</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#org58391ab"><span class="nav-number">5.3.</span> <span class="nav-text">Huffman编码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#org0ca17be"><span class="nav-number">5.4.</span> <span class="nav-text">交叉熵</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#orgf8acf27"><span class="nav-number">5.5.</span> <span class="nav-text">negative sampling</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#org517ee99"><span class="nav-number">5.6.</span> <span class="nav-text">sub-sampling</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#org95483ce"><span class="nav-number">5.7.</span> <span class="nav-text">phrase</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#org8be7735"><span class="nav-number">6.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#org21e5bc4"><span class="nav-number">7.</span> <span class="nav-text">References</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
