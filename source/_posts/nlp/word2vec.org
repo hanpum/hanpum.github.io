@@ -17,12 +17,16 @@
 
 * 概述
 ** 词向量
-   ~word vector~, 从字面意思来理解，就是词向量。也就是使用一个向量来表示一个词, 其好处就是能够使用数
-   学语言来描述文字符号，从而可以使用数学工具对齐进行分析。
+   ~word vector~, 从字面意思来理解，就是词向量。也就是使用一个向量来表示一个词
 
    \begin{equation*}
      \mathbf{u} = [x_{0}, x_{1}, \cdots, x_{d}]^T
    \end{equation*}
+
+   其好处就是能够使用数学语言来描述文字符号，从而可以使用数学工具对其进行分析。其中最有名的当属如下
+   $vector(King) - vector(Man) + vecotr(Women) \sim vector(Queue)$ , 也就是 ~King~ 对应的词向量减去
+   ~Man~ 对应的词向量, 然后加上 ~Women~ 对应的词向量得到一个向量，所有词向量中，和它最接近的是
+   ~Queue~ , 也就是通过简单的向量加减即可实现语义计算。
 
    从发展历史来看，词向量大致可以分为如下几种:
    1. 特征工程
@@ -246,20 +250,20 @@
    \mathbf{w_{t+i}}$ 也可以等价为对应的向量，以后都按照这种方式来表示。
 
      \begin{equation*}
-\mathbf{W} = \left[
-\begin{array}{cccc}
-  w_{00} & w_{01} & \cdots & w_{0D} \\
-  w_{10} & w_{11} & \cdots & w_{1D} \\
-  \vdots & \vdots & \ddots & \vdots \\
-  w_{V0} & w_{V1} & \cdots & w_{VD} 
-\end{array} \right] 
-= \left[
-\begin{array}{c}
-  \mathbf{w_{0}}^T \\
-  \mathbf{w_{1}}^T \\
-  \vdots \\
-  \mathbf{w_{V}}^T
-\end{array} \right]
+       \mathbf{W} = \left[
+	 \begin{array}{cccc}
+	   w_{00} & w_{01} & \cdots & w_{0D} \\
+	   w_{10} & w_{11} & \cdots & w_{1D} \\
+	   \vdots & \vdots & \ddots & \vdots \\
+	   w_{V0} & w_{V1} & \cdots & w_{VD} 
+	 \end{array} \right] 
+       = \left[
+	 \begin{array}{c}
+	   \mathbf{w_{0}}^T \\
+	   \mathbf{w_{1}}^T \\
+	   \vdots \\
+	   \mathbf{w_{V}}^T
+	 \end{array} \right]
      \end{equation*}
      
    
@@ -270,12 +274,12 @@
    \begin{equation*}
      cos(\mathbf{w}_{i}, \mathbf{w}_{j}) = \frac
      {
-\mathbf{w}_{i}\cdot \mathbf{w}_{j}
+       \mathbf{w}_{i}\cdot \mathbf{w}_{j}
      }
      {
-\parallel \mathbf{w}_{i} \parallel
-\cdot
-\parallel \mathbf{w}_{j} \parallel
+       \parallel \mathbf{w}_{i} \parallel
+       \cdot
+       \parallel \mathbf{w}_{j} \parallel
      }
    \end{equation*}
 
@@ -294,8 +298,7 @@
    
    推导得到（将向量表示代入余弦定理，结合点积公式整理化简），具体细节这里不做展开。
    
-   在实际使用中，$\color{red}{如果假设 \mathbf{w}_i, \mathbf{w}_j 都是单位向量}(待确认)$，那么，余弦相似度中的分母可
-   以忽略。于是可以得到未归一化的概率:
+   在 ~word2vec~ 的设计中，余弦相似度中的分母直接被忽略掉了, 具体原因在后面细说，于是可以得到未归一化的概率:
    
    \begin{equation*} 
      \hat{p}(\mathbf{w}_{i}|\mathbf{w}_{j}) = \mathbf{w}_{i} \cdot \mathbf{w}_{j}
@@ -305,7 +308,7 @@
 
    \begin{equation} \label{eq-softmax}
      p(\mathbf{w}_{i}|\mathbf{w}_{j}) \ =\ \mathcal{S}(\mathbf{w_i} \cdot \mathbf{w_j}) \ =\ \frac{exp(\mathbf{w}_{i} \cdot \mathbf{w}_{j})}
-				      {\sum\limits_{j=0}^{V} exp(\mathbf{w}_{j} \cdot \mathbf{w}_{j})}
+     {\sum\limits_{j=0}^{V} exp(\mathbf{w}_{j} \cdot \mathbf{w}_{j})}
    \end{equation}
 
 ** 优化公式
@@ -582,234 +585,234 @@
     接下来讲到的几个优化技巧中，有两个就是针对这一项进行展开。
 
 ** hierarchical softmax 
-    原始softmax的计算过程是一个扁平决策的过程，而 ~hierarchical softmax~ 使用的是决策树。
-    
-    其计算模型如下图所示
+   原始softmax的计算过程是一个扁平决策的过程，而 ~hierarchical softmax~ 使用的是决策树。
+   
+   其计算模型如下图所示
 
-    #+NAME: hierarchical-softmax
-    #+HEADER: :headers '("\\usepackage{tikz}" "\\usepackage{xeCJK}" "\\usetikzlibrary{arrows.meta}" "\\usetikzlibrary{positioning}")
-    #+HEADER: :imagemagick yes
-    #+HEADER: :iminoptions -density 600 :imoutoptions -geometry 800x600 -quality 100
-    #+BEGIN_SRC latex :fit yes :results file link slient :file-ext png :output-dir word2vec :exports none
-      \begin{tikzpicture}[auto, >=Stealth, inner sep=0cm, scale=2.0,
-	word/.style={shape=circle,draw=blue!50,thick,minimum size=1.2cm,font=\scriptsize},
-	leafword/.style={word,shape=rectangle,minimum size=0.8cm},
-	empword/.style={word,fill=blue!25,very thick,draw=red},
-	arrow/.style={<-,gray!81}
-	]
+   #+NAME: hierarchical-softmax
+   #+HEADER: :headers '("\\usepackage{tikz}" "\\usepackage{xeCJK}" "\\usetikzlibrary{arrows.meta}" "\\usetikzlibrary{positioning}")
+   #+HEADER: :imagemagick yes
+   #+HEADER: :iminoptions -density 600 :imoutoptions -geometry 800x600 -quality 100
+   #+BEGIN_SRC latex :fit yes :results file link slient :file-ext png :output-dir word2vec :exports none
+     \begin{tikzpicture}[auto, >=Stealth, inner sep=0cm, scale=2.0,
+       word/.style={shape=circle,draw=blue!50,thick,minimum size=1.2cm,font=\scriptsize},
+       leafword/.style={word,shape=rectangle,minimum size=0.8cm},
+       empword/.style={word,fill=blue!25,very thick,draw=red},
+       arrow/.style={<-,gray!81}
+       ]
 
-	% axis grid
-	%\draw[step=0.5cm,color=gray!20,dashed] (-3,-4) grid (3,4);
-	%\draw [->,red!20] (-4,0) -- (4,0);
-	%\draw [->,red!20] (0,-3) -- (0,3);
+       % axis grid
+       % \draw[step=0.5cm,color=gray!20,dashed] (-3,-4) grid (3,4);
+       % \draw [->,red!20] (-4,0) -- (4,0);
+       % \draw [->,red!20] (0,-3) -- (0,3);
 
-	%\foreach \x in {-3,...,3} {
-	%  \node[below=2pt] at (\x, 0) {\tiny $\x$};
-	%}
-	%\foreach \x in {-4,...,4} {
-	%  \node[right=2pt] at (0, \x) {\tiny $\x$};
-	%}
+       % \foreach \x in {-3,...,3} {
+       % \node[below=2pt] at (\x, 0) {\tiny $\x$};
+       % }
+       %   \foreach \x in {-4,...,4} {
+       %   \node[right=2pt] at (0, \x) {\tiny $\x$};
+       % }
 
-	% w_t
-	\node[word] (w_t) at (-4.5,0) {$w_t$};
+       %   w_t
+       \node[word] (w_t) at (-4.5,0) {$w_t$};
 
-	% root
-	\node[empword] (u_0) at (-3,0) {$\sigma(u_0 w_t)$} edge[arrow] (w_t);
+       % root
+       \node[empword] (u_0) at (-3,0) {$\sigma(u_0 w_t)$} edge[arrow] (w_t);
 
-	% level1
-	\node[word] (u_1) at (-2,-2) {$\sigma(u_1 w_t)$} edge[arrow] node[sloped,below=3pt] {0} (u_0);
-	\node[empword] (u_2) at (-2, 2) {$\sigma(u_2 w_t)$} edge[arrow, very thick,red] node[sloped,above=3pt] {1} (u_0);
+       % level1
+       \node[word] (u_1) at (-2,-2) {$\sigma(u_1 w_t)$} edge[arrow] node[sloped,below=3pt] {0} (u_0);
+       \node[empword] (u_2) at (-2, 2) {$\sigma(u_2 w_t)$} edge[arrow, very thick,red] node[sloped,above=3pt] {1} (u_0);
 
-	% level2
-	\node[word] (u_3) at (-1,-3) {$\sigma(u_3 w_t)$} edge[arrow] node[sloped,below=3pt] {0} (u_1);
-	\node[word] (u_4) at (-1,-1) {$\sigma(u_4 w_t)$} edge[arrow] node[sloped,above=3pt] {1} (u_1);
-	\node[empword] (u_5) at (-1, 1) {$\sigma(u_5 w_t)$} edge[arrow,very thick,red] node[sloped,above=3pt] {0} (u_2);
-	\node[word] (u_6) at (-1, 3) {$\sigma(u_6 w_t)$} edge[arrow] node[sloped,below=3pt] {1} (u_2);
+       % level2
+       \node[word] (u_3) at (-1,-3) {$\sigma(u_3 w_t)$} edge[arrow] node[sloped,below=3pt] {0} (u_1);
+       \node[word] (u_4) at (-1,-1) {$\sigma(u_4 w_t)$} edge[arrow] node[sloped,above=3pt] {1} (u_1);
+       \node[empword] (u_5) at (-1, 1) {$\sigma(u_5 w_t)$} edge[arrow,very thick,red] node[sloped,above=3pt] {0} (u_2);
+       \node[word] (u_6) at (-1, 3) {$\sigma(u_6 w_t)$} edge[arrow] node[sloped,below=3pt] {1} (u_2);
 
-	% level3
-	\node[leafword] (u_7) at (0,0) {$w_{i}$} edge[arrow,very thick,red] node[sloped,below=3pt] {0} (u_5);
-	\node[leafword] (u_8) at (0,2) {$w_{i+1}$} edge[arrow] node[sloped,above=3pt] {1} (u_5);
+       % level3
+       \node[leafword] (u_7) at (0,0) {$w_{i}$} edge[arrow,very thick,red] node[sloped,below=3pt] {0} (u_5);
+       \node[leafword] (u_8) at (0,2) {$w_{i+1}$} edge[arrow] node[sloped,above=3pt] {1} (u_5);
 
-	\foreach \i/\text in {0,...,6} {
-	  \node[above=3pt] at (u_\i.north) {$n_\text$};
-	}
+       \foreach \i/\text in {0,...,6} {
+	 \node[above=3pt] at (u_\i.north) {$n_\text$};
+       }
 
-	\foreach \i/\text in {3,4,6} {
-	  \node[right=10pt] at (u_\i.east) {$\cdots$};
-	}
-      \end{tikzpicture}
-    #+END_SRC
+       \foreach \i/\text in {3,4,6} {
+	 \node[right=10pt] at (u_\i.east) {$\cdots$};
+       }
+     \end{tikzpicture}
+   #+END_SRC
 
-    [[file:word2vec/hierarchical-softmax.png]]
+   file:word2vec/hierarchical-softmax.png]]
 
-    词表中的每个单词都对应决策树中的一个叶子节点(图中的方框), 每个中间节点(图中的圆圈) 对应有一个向
-    量 $\mathbf{u}$ , 将输入 $\mathbf{w}_t$ 和 $\mathbf{u}$ 点积之后，输入 ~sigmoid~ 做一个二分类，
-    如果小于0.5， 走左子树，否则走右子树。重复上述过程，直到抵达叶子节点。 
-    
-    在训练过程中，由于目标单词 $w_i$ 是已知的，那么从根节点到 $w_i$ 的路径(图中的加粗路
-    径)就是已知的，对于任何一个输入, 如果构造的树是完全二叉树，则只需要计算 $log_2\ V$ 次即可， 而不
-    是原始 softmax 中的 $V$ 次。关于这棵二叉树的构造下一节会做进一步展开。
-    
-    由于 ~hierarchical softmax~ 修改了之前的 ~loss~ 计算，因此参数更新方式也要做相应调整。
+   词表中的每个单词都对应决策树中的一个叶子节点(图中的方框), 每个中间节点(图中的圆圈) 对应有一个向
+   量 $\mathbf{u}$ , 将输入 $\mathbf{w}_t$ 和 $\mathbf{u}$ 点积之后，输入 ~sigmoid~ 做一个二分类，
+   如果小于0.5， 走左子树，否则走右子树。重复上述过程，直到抵达叶子节点。 
+   
+   在训练过程中，由于目标单词 $w_i$ 是已知的，那么从根节点到 $w_i$ 的路径(图中的加粗路
+   径)就是已知的，对于任何一个输入, 如果构造的树是完全二叉树，则只需要计算 $log_2\ V$ 次即可， 而不
+   是原始 softmax 中的 $V$ 次。关于这棵二叉树的构造下一节会做进一步展开。
+   
+   由于 ~hierarchical softmax~ 修改了之前的 ~loss~ 计算，因此参数更新方式也要做相应调整。
 
-    假设目标单词 $w_i$ 对应的路径为 $\pi_{i} = \{n_0, n_1, \cdots, n_M\}$ , 对应的每个节点的的标签
-    (走左子树还是右子树)为 $L_i = \{l_0, l_1, \cdots, l_M\}, l_i \in \{0,1\}$ , 那么，对于路径上的每
-    一个节点 $n_i$ , 有 
+   假设目标单词 $w_i$ 对应的路径为 $\pi_{i} = \{n_0, n_1, \cdots, n_M\}$ , 对应的每个节点的的标签
+   (走左子树还是右子树)为 $L_i = \{l_0, l_1, \cdots, l_M\}, l_i \in \{0,1\}$ , 那么，对于路径上的每
+   一个节点 $n_i$ , 有 
 
-    \begin{equation} \label{eq-sigmoid}
-      \begin{array}{rcl}
-      p(n_i|w_t) & = & \Bigg\{\begin{array}{cr}
-			     \frac{1}{1 + e^{-u_{i} \cdot w_{t}}}, & \quad l_{i} = 1 \\
-			     \\
-			     1 - \frac{1}{1 + e^{-u_{i} \cdot w_{t}}}, & \quad l_{i} = 0
-			   \end{array} \\
-		 \\    
-		 & = & \left( \frac{1}{1 + e^{-u_{i} \cdot w_{t}}} \right)^{l_{i}}
-		       \left( 1 - \frac{1}{1 + e^{-u_{i} \cdot w_{t}}} \right)^{1-l_{i}} \\
-	\\
-		 & = & \sigma(u_{j} \cdot w_{t})^{l_{i}}
-		       \times
-		       \left(1 - \sigma(u_{j} \cdot w_{t})\right)^{1-l_{i}}
-	\end{array}
-    \end{equation}
-    
-    据此可以得到对应的 ~loss~ 函数:
-	\begin{equation} \label{eq-hsm-loss}
-	  \begin{array}{rcl}
-	    p(w_{i}|w_{t}) & = & \prod\limits_{j=0}^{M} p(n_{j}|w_{t}) \\
-	    \\
-	    \mathcal{L(w_{i})} & = & -log\ p(w_{i}|w_{t}) \\
-			   & = & -\sum\limits_{j=0}^{M}
-				 l_{j} \cdot log\ \sigma(u_{j} \cdot w_{t})
-				 +
-				 (1-l_{j}) \cdot log\ \left[1 - \sigma(u_{j} \cdot w_{t}) \right] \\
-	  \end{array}
-	\end{equation}
-	
-    结合 ~sigmoid~ 函数的梯度计算
+   \begin{equation} \label{eq-sigmoid}
+     \begin{array}{rcl}
+       p(n_i|w_t) & = & \Bigg\{\begin{array}{cr}
+				 \frac{1}{1 + e^{-u_{i} \cdot w_{t}}}, & \quad l_{i} = 1 \\
+				 \\
+				 1 - \frac{1}{1 + e^{-u_{i} \cdot w_{t}}}, & \quad l_{i} = 0
+			       \end{array} \\
+       \\    
+		  & = & \left( \frac{1}{1 + e^{-u_{i} \cdot w_{t}}} \right)^{l_{i}}
+			\left( 1 - \frac{1}{1 + e^{-u_{i} \cdot w_{t}}} \right)^{1-l_{i}} \\
+       \\
+		  & = & \sigma(u_{j} \cdot w_{t})^{l_{i}}
+			\times
+			\left(1 - \sigma(u_{j} \cdot w_{t})\right)^{1-l_{i}}
+     \end{array}
+   \end{equation}
+   
+   据此可以得到对应的 ~loss~ 函数:
+   \begin{equation} \label{eq-hsm-loss}
+     \begin{array}{rcl}
+       p(w_{i}|w_{t}) & = & \prod\limits_{j=0}^{M} p(n_{j}|w_{t}) \\
+       \\
+       \mathcal{L(w_{i})} & = & -log\ p(w_{i}|w_{t}) \\
+		      & = & -\sum\limits_{j=0}^{M}
+			    l_{j} \cdot log\ \sigma(u_{j} \cdot w_{t})
+			    +
+			    (1-l_{j}) \cdot log\ \left[1 - \sigma(u_{j} \cdot w_{t}) \right] \\
+     \end{array}
+   \end{equation}
 
-    \begin{equation*} 
-      \begin{array}{rclcl}
-	\sigma^{'}(x) & = & \sigma(x) \cdot \left( 1 - \sigma(x) \right) \\
-	\\
-	\partial log \sigma(x) / \partial x & = & 1- \sigma(x) \\
-	\\
-	\partial log\ \left( 1-\sigma(x) \right) / \partial x  & = & \frac{1}{1-\sigma(x)}
-									  \cdot -1 \cdot
-									  \sigma(x) \cdot \left[ 1 - \sigma(x) \right] & = & -\sigma(x) \\
-      \end{array}
-    \end{equation*}
-    
-    可以得到对应的梯度
-    
-    \begin{equation*}
-      \begin{array}{rclcl}
-	\frac{\partial \mathcal{L}(w_{i})}{ \partial w_{i}} & = & -\sum\limits_{j=0}^{M}
-							   l_{j} \cdot \left[ 1- \sigma(u_{j} \cdot w_{t}) \right]
-							   +
-								  (1-l_{j}) \cdot - \sigma(u_{j} \cdot w_{t}) 
-							    & = & -\sum\limits_{j=0}^{M}
-								  \left[
-								  l_{i} - \sigma(u_{j} \cdot w_{t}) 
-								  \right] \cdot u_{j} \\
-	\\
-	\frac{\partial \mathcal{L}(w_{i})}{ \partial u_{j}} & = & -\left[
-								  l_{j} - \sigma(u_{j} \cdot w_{t}) 
-								  \right] \cdot w_{t}
-      \end{array}
-    \end{equation*}
-    
-    ~word2vec~ 源码中使用的更新公式和上面有一些差异，主要是因为式 [[ref:eq-sigmoid]] 中的 ~label~ 和
-    ~word2vec~ 的恰好反过来，如果要保持一致的话，使用 $1-l_j$ 替换上述式子中的 $l_j$ , 即可得到和
-    ~word2vec~ 源码中一样的结果。
+   结合 ~sigmoid~ 函数的梯度计算
+
+   \begin{equation*} 
+     \begin{array}{rclcl}
+       \sigma^{'}(x) & = & \sigma(x) \cdot \left( 1 - \sigma(x) \right) \\
+       \\
+       \partial log \sigma(x) / \partial x & = & 1- \sigma(x) \\
+       \\
+       \partial log\ \left( 1-\sigma(x) \right) / \partial x  & = & \frac{1}{1-\sigma(x)}
+								    \cdot -1 \cdot
+								    \sigma(x) \cdot \left[ 1 - \sigma(x) \right] & = & -\sigma(x) \\
+     \end{array}
+   \end{equation*}
+   
+   可以得到对应的梯度
+   
+   \begin{equation*}
+     \begin{array}{rclcl}
+       \frac{\partial \mathcal{L}(w_{i})}{ \partial w_{i}} & = & -\sum\limits_{j=0}^{M}
+								 l_{j} \cdot \left[ 1- \sigma(u_{j} \cdot w_{t}) \right]
+								 +
+								 (1-l_{j}) \cdot - \sigma(u_{j} \cdot w_{t}) 
+       & = & -\sum\limits_{j=0}^{M}
+	     \left[
+	     l_{i} - \sigma(u_{j} \cdot w_{t}) 
+	     \right] \cdot u_{j} \\
+       \\
+       \frac{\partial \mathcal{L}(w_{i})}{ \partial u_{j}} & = & -\left[
+								 l_{j} - \sigma(u_{j} \cdot w_{t}) 
+								 \right] \cdot w_{t}
+     \end{array}
+   \end{equation*}
+   
+   ~word2vec~ 源码中使用的更新公式和上面有一些差异，主要是因为式 [[ref:eq-sigmoid]] 中的 ~label~ 和
+   ~word2vec~ 的恰好反过来，如果要保持一致的话，使用 $1-l_j$ 替换上述式子中的 $l_j$ , 即可得到和
+   ~word2vec~ 源码中一样的结果。
     
 ** Huffman编码
-    上一节在分析 ~hierarchical softmax~ 的时候，使用的决策树是一颗完全二叉树，也就是所有单词无差别对
-    待，全部分布在树的最后一层或倒数第二层的右边，如果将每个单词出现的概率作为其权重，那么可以得到一
-    个 [[https://baike.baidu.com/item/%E5%93%88%E5%A4%AB%E6%9B%BC%E6%A0%91][带权二叉树]]，其带权路径长度为 $log V$ 。这棵树可以进一步优化得到带权路径最小的 ~Huffman~ 树，
-    也成为最优二叉树。
-    
-    关于带权二叉树的细节这里不做展开，细节可以参考 [[https://baike.baidu.com/item/%E5%93%88%E5%A4%AB%E6%9B%BC%E6%A0%91][百度百科]] 。其构建方式如下:
+   上一节在分析 ~hierarchical softmax~ 的时候，使用的决策树是一颗完全二叉树，也就是所有单词无差别对
+   待，全部分布在树的最后一层或倒数第二层的右边，如果将每个单词出现的概率作为其权重，那么可以得到一
+   个 [[https://baike.baidu.com/item/%E5%93%88%E5%A4%AB%E6%9B%BC%E6%A0%91][带权二叉树]]，其带权路径长度为 $log V$ 。这棵树可以进一步优化得到带权路径最小的 ~Huffman~ 树，
+   也成为最优二叉树。
+   
+   关于带权二叉树的细节这里不做展开，细节可以参考 [[https://baike.baidu.com/item/%E5%93%88%E5%A4%AB%E6%9B%BC%E6%A0%91][百度百科]] 。其构建方式如下:
 
-    - 将所有单词作为一棵树，组成森林 $\mathcal{F} = \{t_0, t_1, \cdots, t_V\}$
-    - 从 $\mathcal{F}$ 中挑选权重最小的两棵树 $t_i, t_j$, 将其从 $\mathcal{F}$ 中移除
-    - 新建一棵树 $\hat{t}$ , 其左右子树分别为上面挑选出来的为 $t_i, t_j$
-    - 将 $\hat{t}$ 添加到 $\mathcal{F}$ 中
-    - 重复上面三步，直到 $\mathcal{F}$ 中只剩下一棵树，即为最终的 ~Huffman~ 树。
-      
-    完成 ~Huffman~ 树构建之后，其他的计算过程和上一节的完全一样。
+   - 将所有单词作为一棵树，组成森林 $\mathcal{F} = \{t_0, t_1, \cdots, t_V\}$
+   - 从 $\mathcal{F}$ 中挑选权重最小的两棵树 $t_i, t_j$, 将其从 $\mathcal{F}$ 中移除
+   - 新建一棵树 $\hat{t}$ , 其左右子树分别为上面挑选出来的为 $t_i, t_j$
+   - 将 $\hat{t}$ 添加到 $\mathcal{F}$ 中
+   - 重复上面三步，直到 $\mathcal{F}$ 中只剩下一棵树，即为最终的 ~Huffman~ 树。
+     
+   完成 ~Huffman~ 树构建之后，其他的计算过程和上一节的完全一样。
      
 ** 交叉熵
-    为了分析接下来的负采样技术，我们先换一个角度来看 ~loss~ 函数, 以 ~CBOW~ 为例。
+   为了分析接下来的负采样技术，我们先换一个角度来看 ~loss~ 函数, 以 ~CBOW~ 为例。
 
-    \begin{equation*}
-      \mathcal{J}(w_{t}, \Theta) = -\frac{1}{T} \sum\limits_{t=M}^{t=T-M} log\ p(w_{t}|h_{t})
-    \end{equation*}
-    
-    也就是使用某种方式计算出目标单词的概率 $p(w_t|\cdot)$ , 然后取 ~log~ , 最后在整个语料上取一个平
-    均。 ~skip-gram~ 的 ~loss~ 函数也是这个形式，只不过里面有多个求和项(基于当前单词预测窗口内多个单
-    词)。
+   \begin{equation*}
+     \mathcal{J}(w_{t}, \Theta) = -\frac{1}{T} \sum\limits_{t=M}^{t=T-M} log\ p(w_{t}|h_{t})
+   \end{equation*}
+   
+   也就是使用某种方式计算出目标单词的概率 $p(w_t|\cdot)$ , 然后取 ~log~ , 最后在整个语料上取一个平
+   均。 ~skip-gram~ 的 ~loss~ 函数也是这个形式，只不过里面有多个求和项(基于当前单词预测窗口内多个单
+   词)。
 
-    前面在分析的时候，对概率 $p(w_t|\cdot)$ 取 ~log~ 的原因是:
-    - 方便计算，将连乘转换成求和
-    - 避免数值计算中的精度丢失或者溢出问题
+   前面在分析的时候，对概率 $p(w_t|\cdot)$ 取 ~log~ 的原因是:
+   - 方便计算，将连乘转换成求和
+   - 避免数值计算中的精度丢失或者溢出问题
 
-    下面将从信息论的角度来解释这么做的目的。
-    
-    *[[https://baike.baidu.com/item/%E7%86%B5/19190273][熵]]* 用来表示一个系统内在的混乱程度或者不确定性程度，熵越大，混乱程度越高，说明这个系统越不稳定。
-    反之则说明这个系统越稳定。
+   下面将从信息论的角度来解释这么做的目的。
+   
+   *[[https://baike.baidu.com/item/%E7%86%B5/19190273][熵]]* 用来表示一个系统内在的混乱程度或者不确定性程度，熵越大，混乱程度越高，说明这个系统越不稳定。
+   反之则说明这个系统越稳定。
 
-    *[[https://baike.baidu.com/item/%E4%BF%A1%E6%81%AF%E7%86%B5][信息熵]]* 在信息论中，信息熵表示的是信息的不确定性，熵越大，信息越不确定，熵越小， 信息越确定。其
-    计算公式如下: 
-    
-    \begin{equation*}
-      H(x) = \sum_{i} q(x_{i}) \cdot log\ \frac{1}{q(x_{i})} = - \sum_{i} q(x_{i}) \cdot log\ q(x_{i})
-    \end{equation*}
+   *[[https://baike.baidu.com/item/%E4%BF%A1%E6%81%AF%E7%86%B5][信息熵]]* 在信息论中，信息熵表示的是信息的不确定性，熵越大，信息越不确定，熵越小， 信息越确定。其
+   计算公式如下: 
+   
+   \begin{equation*}
+     H(x) = \sum_{i} q(x_{i}) \cdot log\ \frac{1}{q(x_{i})} = - \sum_{i} q(x_{i}) \cdot log\ q(x_{i})
+   \end{equation*}
 
-    $\mathbf{X}$ 表示一个随机变量，$x_i$ 表示其特定的取值, $q(x_i)$ 表示对应取值发生的概率。
-    
-    比如,  $x = 0$ 表示太阳明天不会升起, $x=1$ 表示太阳明天不会升起，那么，在我们这个世界有 
-    $q(x_0) = 0, q(x_1) = 1, H(x) = 0 \cdot log 0 + 1 \cdot log 1$ , 也就是 $\mathbf{X}$ 这个随机变量的不确定性为0。 
-    
-    从概率分布的角度来说， $q(x_i)$ 称之为真实分布，很多时候，我们并不知道真实分布, 而是通过另外一个
-    分布来拟合这个真实分布，这个拟合分布记作 $p(x_i)$ ，那么，可以通过 [[https://baike.baidu.com/item/%E7%9B%B8%E5%AF%B9%E7%86%B5][KL散度/相对熵]] 来度量这个拟合的逼近程度:
+   $\mathbf{X}$ 表示一个随机变量，$x_i$ 表示其特定的取值, $q(x_i)$ 表示对应取值发生的概率。
+   
+   比如,  $x = 0$ 表示太阳明天不会升起, $x=1$ 表示太阳明天不会升起，那么，在我们这个世界有 
+   $q(x_0) = 0, q(x_1) = 1, H(x) = 0 \cdot log 0 + 1 \cdot log 1$ , 也就是 $\mathbf{X}$ 这个随机变量的不确定性为0。 
+   
+   从概率分布的角度来说， $q(x_i)$ 称之为真实分布，很多时候，我们并不知道真实分布, 而是通过另外一个
+   分布来拟合这个真实分布，这个拟合分布记作 $p(x_i)$ ，那么，可以通过 [[https://baike.baidu.com/item/%E7%9B%B8%E5%AF%B9%E7%86%B5][KL散度/相对熵]] 来度量这个拟合的逼近程度:
 
-    \begin{equation*}
-      \begin{array}{rcl}
-	KL(q,p) & = & \sum_{i} q(x_{i}) \cdot log\ \frac{q(x_{i})}{p(x_{i})} \\
-	\\
-	       & = & \sum_{i} \left[ q(x_{i}) \cdot log\ q(x_{i})  - q(x_{i}) \cdot log\ p(x_{i}) \right] \\
-	\\
-	       & = & -H(p) - \sum_{i} q(x_{i}) \cdot log\ p(x_{i})
-      \end{array}
-    \end{equation*}
+   \begin{equation*}
+     \begin{array}{rcl}
+KL(q,p) & = & \sum_{i} q(x_{i}) \cdot log\ \frac{q(x_{i})}{p(x_{i})} \\
+\\
+       & = & \sum_{i} \left[ q(x_{i}) \cdot log\ q(x_{i})  - q(x_{i}) \cdot log\ p(x_{i}) \right] \\
+\\
+       & = & -H(p) - \sum_{i} q(x_{i}) \cdot log\ p(x_{i})
+     \end{array}
+   \end{equation*}
 
 
-    KL 散度越小，说明两个分布越接近。上式中第一项是 ~q~ 分布的熵， 这一样不会因为 ~p~ 改变而改变，而
-    我们的目标是得到 ~p~ 分布，因此第一项可以忽略，优化目标简化如下:
-    
-    \begin{equation*}
-      \mathop{\arg\min}_{p}\ - \sum_{i}q(x_{i}) \cdot log \ p(x_{i})
-    \end{equation*}
+   KL 散度越小，说明两个分布越接近。上式中第一项是 ~q~ 分布的熵， 这一样不会因为 ~p~ 改变而改变，而
+   我们的目标是得到 ~p~ 分布，因此第一项可以忽略，优化目标简化如下:
+   
+   \begin{equation*}
+     \mathop{\arg\min}_{p}\ - \sum_{i}q(x_{i}) \cdot log \ p(x_{i})
+   \end{equation*}
 
-    其中的 $q(x_i) \cdot log\ p(x_i)$ 叫做 [[https://baike.baidu.com/item/%E4%BA%A4%E5%8F%89%E7%86%B5/8983241][交叉熵]] 。 可以看到， ~loss~ 函数相对于上面的交叉熵少了一
-    个求和项，接下来说明两者是等价的。 
-    
-    由上面的分析可以知道，$q(x_i)$ 是真实概率分布，$p(x_i)$ 是拟合的概率分布, 对应 ~skip-gram~
-    中的 $p(w_j|w_i)$, ~CBOW~ 中的 $p(w_t|h_t)$ , 而真实分布是不知道的, 因为如果知道的话，就不用拟合，
-    直接拿过来用就是了， 所以只能根据统计学，使用实际观测到的值来模拟, 也就是当前时刻观察到哪个单词，
-    其概率就是1, 其他的单词出现的概率都是0, 也即 $p(w_t) = 1,\ p(w_{t^{'}}, t^{'} \neq t) = 0$ , 对
-    应的分布向量称为 ~one-hot~ 向量。由此可得:
-    
-    \begin{equation*}
-      \begin{array}{rcl} 
-	-\sum_{i} q(x_{i}) \cdot log\ p(w_{i}|h_{t}) & = & - 1 \cdot log\ p(w_{t}|h_{t}) - \sum_{i, i\neq t} 0 \cdot log\ p(w_{i}|h_{t}) \\
-						     & = & - log\ p(w_{t}|h_{t})
-      \end{array}
-    \end{equation*}
-    
-    这是给定一个单词对应的 ~loss~ , 如果在整个句子上求平均，正好是 [[eqref:eq-cbow-loss]] 。所以，[[eqref:eq-cbow-loss]]
-    实际上计算的就是交叉熵。
+   其中的 $q(x_i) \cdot log\ p(x_i)$ 叫做 [[https://baike.baidu.com/item/%E4%BA%A4%E5%8F%89%E7%86%B5/8983241][交叉熵]] 。 可以看到， ~loss~ 函数相对于上面的交叉熵少了一
+   个求和项，接下来说明两者是等价的。 
+   
+   由上面的分析可以知道，$q(x_i)$ 是真实概率分布，$p(x_i)$ 是拟合的概率分布, 对应 ~skip-gram~
+   中的 $p(w_j|w_i)$, ~CBOW~ 中的 $p(w_t|h_t)$ , 而真实分布是不知道的, 因为如果知道的话，就不用拟合，
+   直接拿过来用就是了， 所以只能根据统计学，使用实际观测到的值来模拟, 也就是当前时刻观察到哪个单词，
+   其概率就是1, 其他的单词出现的概率都是0, 也即 $p(w_t) = 1,\ p(w_{t^{'}}, t^{'} \neq t) = 0$ , 对
+   应的分布向量称为 ~one-hot~ 向量。由此可得:
+   
+   \begin{equation*}
+     \begin{array}{rcl} 
+-\sum_{i} q(x_{i}) \cdot log\ p(w_{i}|h_{t}) & = & - 1 \cdot log\ p(w_{t}|h_{t}) - \sum_{i, i\neq t} 0 \cdot log\ p(w_{i}|h_{t}) \\
+					     & = & - log\ p(w_{t}|h_{t})
+     \end{array}
+   \end{equation*}
+   
+   这是给定一个单词对应的 ~loss~ , 如果在整个句子上求平均，正好是 [[eqref:eq-cbow-loss]] 。所以，[[eqref:eq-cbow-loss]]
+   实际上计算的就是交叉熵。
 
 ** negative sampling
     上面的分析给出了 ~softmax loss~ 函数的本质:
@@ -891,44 +894,68 @@
     后面准备单开一篇 blog 来做深入学习。 
 
 ** sub-sampling
-    ~sub-sampling~ 技术, 主要是为了解决前面共现矩阵面临的同样问题，就是语料中某些词语的频率远高于其
-    它词，在一定程度上会影响词向量的训练。因此在训练过程中，会根据某个词出现的频率高低，按照一定的概
-    率将其从语料中丢掉, 有点类似于 ~maked language model~ 。paper 中给出的对于单词 $w_i$ ， 其在训
-    练中被扔掉的概率是
-    
-    \begin{equation*}
-      p(w_{i}) = 1 - \sqrt{t/f_{w_{i}}}
-    \end{equation*}
-    
-    其中 $f_{w_i}$ 为 $w_i$ 在整个语料中出现的概率, $t$ 为一个给定的阈值，paper中的默认值是 $1e-5$ ,
-    $f_{w_i} < t$ 的单词不会被扔掉。$f_{w_i}$ 越大，被扔掉的概率越大。
-    
-    代码中实际使用的和 paper 中有些差异:
-    
-    \begin{equation*}
-      p(w_{i}) = 1 - t/f_{w_{i}} - \sqrt{t/f_{w_{i}}}
-    \end{equation*}
-    
-    也就是 $f_{w_i} \leq \frac{\sqrt{5}+1}{2} \cdot t$ 的时候不会被扔掉, $s$ 默认取值是 $1e-3$ 。 看
-    起来和 paper 中没什么本质差别，至于为什么使用这个, 原因不明。 
+   ~sub-sampling~ 技术, 主要是为了解决前面共现矩阵面临的同样问题，就是语料中某些词语的频率远高于其
+   它词，在一定程度上会影响词向量的训练。因此在训练过程中，会根据某个词出现的频率高低，按照一定的概
+   率将其从语料中丢掉, 有点类似于 ~maked language model~ 。paper 中给出的对于单词 $w_i$ ， 其在训
+   练中被扔掉的概率是
+   
+   \begin{equation*}
+     p(w_{i}) = 1 - \sqrt{t/f_{w_{i}}}
+   \end{equation*}
+   
+   其中 $f_{w_i}$ 为 $w_i$ 在整个语料中出现的概率, $t$ 为一个给定的阈值，paper中的默认值是 $1e-5$ ,
+   $f_{w_i} < t$ 的单词不会被扔掉。$f_{w_i}$ 越大，被扔掉的概率越大。
+   
+   代码中实际使用的和 paper 中有些差异:
+   
+   \begin{equation*}
+     p(w_{i}) = 1 - t/f_{w_{i}} - \sqrt{t/f_{w_{i}}}
+   \end{equation*}
+   
+   也就是 $f_{w_i} \leq \frac{\sqrt{5}+1}{2} \cdot t$ 的时候不会被扔掉, $s$ 默认取值是 $1e-3$ 。 看
+   起来和 paper 中没什么本质差别，至于为什么使用这个, 原因不明。 
 
 ** phrase
-    在 cite:mikolov-2013-distr-repres 中，作者还提到了一个点，就是有些专有名词由多个单词组成，但
-    是其意义并非简单的组成它的几个单词的组合，比如， ~New York~ , ~Houston Rockets~ , 这个时候更合理
-    的是将这些作为一个单词对待。对此作者提出了一个简单的 ~data-driven~ 的方法，就是统计语料中所有
-    ~bi-gram~ , 计算得到一个 ~score~ 
+   在 cite:mikolov-2013-distr-repres 中，作者还提到了一个点，就是有些专有名词由多个单词组成，但是其
+   意义并非简单的组成它的几个单词的组合，比如， ~New York~ , ~Houston Rockets~ , 这个时候更合理的是
+   将这些作为一个单词对待。对此作者提出了一个简单的 ~data-driven~ 的方法，就是统计语料中所
+   有~bi-gram~ , 计算得到一个 ~score~
     
-    \begin{equation*}
-      \mathcal{S}(w_{i}, w_{j}) = \frac{ count(w_{i} w_{j}) - \delta } { count(w_{i}) \times count(w_{j}) }
-    \end{equation*}
+   \begin{equation*}
+     \mathcal{S}(w_{i}, w_{j}) = \frac{ count(w_{i} w_{j}) - \delta } { count(w_{i}) \times count(w_{j}) }
+   \end{equation*}
     
-    如果 $\mathcal{S}(w_i, w_j)$ 大于给定的某个阈值, 那么将 $w_i, w_j$ 合并为一个单词。重复这个过程 2~4 遍即可。
+   如果 $\mathcal{S}(w_i, w_j)$ 大于给定的某个阈值, 那么将 $w_i, w_j$ 合并为一个单词。重复这个过程 2~4 遍即可。
 
-    不过这个想法只在 paper 中写到了，源码中并没有看到相关实现。
+   代码实现见 ~word2vec~ 代码仓库中的 ~src/word2phrase.c~ 。
 
-* 总结
+* 评估
+** 测试集
+   1. Word Vector Analogies
+   2. [[http://alfonseca.org/eng/research/wordsim353.html][WordSim353]]
+
+** intrinsic
+** extrinsic 
+** 优化
+   1. 多义词
+   2. 歧义
+* TIPS
+  1. ~skip-gram~ 的效果比 ~cbow~ 要好，因为 ~skip-gram~ 是通过中心单词预测周围其他单词，而 ~cbow~ 是通
+     过周围多个单词预测中心单词，相对而言， ~skip-gram~ 的任务要求更高，从而强迫模型需要学习表达能力
+     更强的词向量。
+
+  2. ~word2vec~ 的训练使用的是多线程技术, 多个线程同时更新同一份权重，但是在训练过程中并没有做线程之
+     间的加锁同步。虽然冲突会导致参数更新不准确，但是对于整体训练来说这个影响并不大，而加锁操作会带
+     来时间消耗，影响训练速度, 两害相权取其轻，所以这里选择了不加锁的方案，更详细的讨论可以参考 [[https://www.zhihu.com/question/2927308][这个]] 。
+
+  3. 关于 ~word2vec~ 网上有一些很好的资料，下面是写作本文中查阅的一些，paper列表见参考文献部分:
+     - [[http://mccormickml.com/2016/04/19/word2vec-tutorial-the-skip-gram-model/][Word2Vec Tutorial - The Skip-Gram Model]] : 对应 [[cite:mikolov-2013-effic-estim]] 的tutorial
+     - [[http://mccormickml.com/2017/01/11/word2vec-tutorial-part-2-negative-sampling/][Word2Vec Tutorial Part 2 - Negative Sampling]]: 对应 [[cite:mikolov-2013-distr-repres]] 的tutorial
+     - [[https://www.cnblogs.com/peghoty/p/3857839.html][word2vec中的数学原理详解]]:  很详细的一份笔记
+     - [[https://www.hankcs.com/nlp/word2vec.html][word2vec原理推导与代码分析]]: 关于 word2vec 的blog，文章最后给出了各种编程语言实现版本
+
 * References
-  bibliography:~/.emacs.d/data/paper/default.bib
+  bibliography:~/.emacs.d/data/papers/bibs/default.bib,~/.emacs.d/data/papers/bibs/word-embedding.bib
   bibliographystyle:unsrt
 
 * COMMENT word vector 
@@ -973,12 +1000,6 @@
       - https://code.google.com/p/word2vec/ 
       - 上面的原始地址的代码已经无法下载，可以看github上的: https://github.com/dav/word2vec
 	
-** overview
-   1. 不同于传统的离散one-hot特征表示, 使用一组连续向量来表示一个单词: $U_{w} = [x_0, x_1, \cdots,
-      x_H]^{T} \in R^{H}$
-   2. 找到一种评价准则，评价该向量表示质量的好坏
-   3. 基于上述准则, 从大量的数据中学习优化每个词的向量表示
-
 ** skip-gram
 *** 测试数据
     http://www.fit.vutbr.cz/~imikolov/rnnlm/word-test.v1.txt
@@ -989,10 +1010,11 @@
   2. [[https://www.cnblogs.com/peghoty/p/3857839.html][word2vec中的数学原理详解]] :  写的很详细
   3. [[https://www.zhihu.com/question/29273081][实现没有加锁的解释]]
   4. [[https://www.tensorflow.org/extras/candidate_sampling.pdf][tensorflow-candidate sampling]]
-  5. http://mccormickml.com/2016/04/19/word2vec-tutorial-the-skip-gram-model/: tutorial
-  6. http://mccormickml.com/2017/01/11/word2vec-tutorial-part-2-negative-sampling/: 对应第二篇文章，优化训练
-  7. 比较有意思的case，使用word2vec思想学习item embedding 并用于推荐
+  5. 比较有意思的case，使用word2vec思想学习item embedding 并用于推荐
      http://mccormickml.com/2018/06/15/applying-word2vec-to-recommenders-and-advertising/
+  6. https://zhuanlan.zhihu.com/p/26306795
+  7. 开启 ~SG~ 之后， ~HS~ 准确率会下降
+     https://github.com/kojisekig/word2vec-lucene/issues/21
 
 * COMMENT Local Settings
 
@@ -1001,3 +1023,5 @@
 # org-confirm-babel-evaluate: nil
 # org-image-actual-width: 200px
 # End:
+
+

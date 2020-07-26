@@ -1,0 +1,92 @@
+#+TITLE: 统计学三大相关系数
+#+AUTHOR:hanpu.mwx
+#+EMAIL: hanpu.mwx@gmail.com
+#+DATE: <2020-05-25 Mon>
+#+UPDATED: <2020-05-25 Mon>
+#+LATEX_HEADER: \usepackage{xeCJK} 
+#+LATEX_HEADER: \usepackage{natbib}
+#+LATEX_HEADER: \usepackage[version=3]{mhchem}
+#+LATEX_HEADER: \usepackage{makeidx}
+#+LATEX_HEADER: \usepackage{amssymb}
+#+LATEX_HEADER: \makeindex
+#+LATEX_HEADER: \newcommand{\vector}[1] { \mathbf{#1} }
+#+TAGS: 统计学
+#+CATEGORIES: MATH
+#+PROPERTY: header-args :output-dir ./cs224n 
+#+OPTIONS: ^:{}
+
+* overview
+  *三种类型*
+  - 正相关
+  - 负相关
+  - 不相关
+
+  *相关系数等级*
+  |----------+------------------|
+  | 相关系数 | 相关度           |
+  |----------+------------------|
+  |  0.8-1.0 | 极强相关         |
+  |----------+------------------|
+  |  0.6-0.8 | 强相关           |
+  |----------+------------------|
+  |  0.4-0.6 | 中等程度相关     |
+  |----------+------------------|
+  |  0.2-0.4 | 弱相关           |
+  |----------+------------------|
+  |  0.0-0.2 | 极弱相关或无相关 |
+  |----------+------------------|
+
+* Pearson correlation
+** 计算公式
+  斯皮尔曼相关系数的计算公式如下:
+
+  \begin{equation*}
+    \begin{array}{rcl}
+      \rho(\mathbf{X}, \mathbf{Y}) & = & \frac{cov(\mathbf{X}, \mathbf{Y})}
+					 {\sigma_{X} \cdot \sigma_{Y}} \\
+      \\
+				   & = & \frac{
+					 E[
+					 \left(\mathbf{X} - \mu_{X}\right)
+					 \cdot
+					 \left(\mathbf{Y} - \mu_{Y}\right)
+					 ]
+					 }{
+					 {\sigma_{X} \cdot \sigma_{Y}}
+					 } \\
+      \\
+				   & = & \frac{
+					 \sum (X-\bar{X}) \cdot (Y-\bar{Y})
+					 }{
+					 \sqrt{
+					 \sum (X-\bar{X})^{2} \cdot (Y-\bar{Y})^{2}
+					 }
+					 }
+    \end{array}
+  \end{equation*}
+  
+  也即是 $\mathbf{X}, \mathbf{Y}$ 两个随机变量的的协方差除以两者的标准差
+  
+** 适用范围
+   当两个变量的标准差都不为零时，相关系数才有定义，皮尔逊相关系数适用于：
+   1) 两个变量之间是线性关系，都是连续数据
+   2) 两个变量的总体是正态分布，或接近正态的单峰分布
+   3) 两个变量的观测值是成对的，每对观测值之间相互独立
+
+* Spearman correlation
+** 计算方法
+   有随机变量 $X = \{x_1, x_2, \cdots, x_n\}$ , 对其进行排序, 记 $r_i$
+   为 $x_i$ 在排序集合中的序号, 得到一个新的集合 $R_X = \{r_1, r_2,
+   \cdots, r_n\}$ 。 同样的，可以得到 $Y$ 对应的集合 $R_Y$ , 计算 
+   $R_X, R_Y$ 的皮尔逊系数即可得到 $X,Y$ 的斯皮尔曼系数。
+   
+   实际上就是不考虑随机变量的值，只考虑其大小分布序号的皮尔逊系数。
+   
+   如果多个值相等 $x_i, x_j, x_k$ , 那么有 
+   $r_i = r_j = r_k = (r_i^{'} + r_j^{'} + r_k^{'})/3$ , 其中，
+   $r_i^{'}$ 为不考虑相等值的排序序号。
+
+** 适用条件
+   斯皮尔曼等级相关系数对数据条件的要求没有皮尔逊相关系数严格, 只要两
+   个变量是成对出现即可，不论整体分布形态，样本容量大小
+

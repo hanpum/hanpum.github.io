@@ -1,0 +1,410 @@
+#+TITLE: 线性代数(MIT 18.06)
+#+AUTHOR:hanpu.mwx
+#+EMAIL: hanpu.mwx@gmail.com
+#+DATE: <2020-06-17 Wed>
+#+UPDATED: <2020-06-17 Wed>
+#+LATEX_HEADER: \usepackage{xeCJK} 
+#+LATEX_HEADER: \usepackage{natbib}
+#+LATEX_HEADER: \usepackage[version=3]{mhchem}
+#+LATEX_HEADER: \usepackage{makeidx}
+#+LATEX_HEADER: \usepackage{amssymb}
+#+LATEX_HEADER: \makeindex
+#+TAGS: MATH
+#+CATEGORIES: NOTES
+#+PROPERTY: header-args :output-dir ./linear-algebra
+#+OPTIONS: ^:{}
+
+* 符号描述
+** 标量 
+   表示一个数值，比如，11
+
+** 向量
+   一维数组可以称之为向量，一般按列来书写，记作:
+    \begin{equation*}
+      \mathbf{x} = \left[
+	\begin{array}{c}
+	  x_{1} \\
+	  x_{2} \\
+	  \cdots \\
+	  x_{n} \\
+	\end{array}
+      \right] \in R^{n \times 1}
+    \end{equation*}
+    
+    $x_i$ 表示 $\mathbf{x}$ 中第 i 的元素， 将上述向量横过来可以得到其
+    *转置* ， 记作: 
+
+    \begin{equation*}
+      \mathbf{x}^{T} = [x_{1}, x_{2}, \cdots, x_{n}] \in R^{1 \times n}
+    \end{equation*}
+    
+    向量一般用来表示一个个体多个不同的属性，比如，一个人的 
+    [身高，体重，性别]， 一个平面中点的坐标 $[x, y]$ 。
+     
+** 矩阵 
+   二维数值数组可以称之为矩阵，比如:
+    \begin{equation*}
+      \mathbf{A} = \left[
+	\begin{array}{cccc}
+	  x_{1,1} & x_{1,2} & \cdots & x_{1,n}\\
+	  x_{2,1} & x_{2,2} & \cdots & x_{2,n}\\
+	  \vdots & \vdots & \ddots & \vdots \\
+	  x_{n,1} & x_{n,2} & \cdots & x_{n,n}\\
+	\end{array}
+      \right] 
+    \end{equation*}
+
+   $\mathbf{A}_{i,j}$ 表示矩阵 $\mathbf{A}$ 的第 i 行，第 j 列
+
+   矩阵也有 *转置* 的概念, 定义为 $A^T_{i,j} = A_{j,i}$ , 比如上面矩阵的转置为:
+
+   \begin{equation*}
+     \mathbf{A}^{T} = \left[
+       \begin{array}{cccc}
+	 x_{1,1} & x_{2,1} & \cdots & x_{n,1}\\
+	 x_{1,2} & x_{2,2} & \cdots & x_{n,2}\\
+	 \vdots & \vdots & \ddots & \vdots \\
+	 x_{1,n} & x_{2,n} & \cdots & x_{n,n}\\
+       \end{array}
+     \right] 
+   \end{equation*}
+   
+   单从矩阵的形式来看，可以有如下解释:
+   
+   - 多个列向量组成的向量
+     \begin{equation*}
+       \begin{array}{rclrcl}
+	 \mathbf{A} & = & \left[ \mathbf{c_{1}},\ \mathbf{c_{2}},\ \cdots,\ \mathbf{c_{n}} \right], 
+	 &
+	   \mathbf{c_{i}} & = & \left[
+				\begin{array}{c}
+				  x_{1,i} \\
+				  x_{2,i} \\
+				  \vdots \\
+				  x_{n,i}
+				\end{array}
+	 \right] 
+       \end{array}
+     \end{equation*}
+
+   - 多个行向量组成的向量
+     \begin{equation*}
+       \begin{array}{rclrcl}
+	 \mathbf{A} & = & \left[
+			  \begin{array}{c}
+			    \mathbf{r}_{1} \\
+			    \mathbf{r}_{2} \\
+			    \vdots \\
+			    \mathbf{r}_{n} 
+			  \end{array}
+	 \right], 
+         &
+	 \mathbf{\mathbf{r}_{i}} & = & [x_{i,1},\ x_{i,2},\ \cdots,\ x_{i,n}] \\
+       \end{array}
+     \end{equation*}
+
+** 张量 
+   多维数组可以称之为张量, 比如 $A_{2,2,2}$ 。张量超过了三维之后对于人
+   类来说图形存在一定难度，暂且不表。 
+    
+* 乘法
+** 向量乘法
+   定义两个向量 $\mathbf{x} = [x_1, x_2, \cdots, x_n]^{T} \in R^{n \times 1}, \quad
+   \mathbf{y} = [y_1, y_2, \cdots, y_n]^{T} \in R^{n \times 1}$ , 
+
+   向量内积定义如下:
+   \begin{array}{rcl}
+     X \cdot Y  & = & X^{T} Y \\
+		& = & \sum_{i=1}^{n} x_{i}y_{i} \\
+   \end{array}
+   
+   向量外积定义如下:
+   \begin{array}{rcl}
+     X \times Y & = & X Y^{T} \\
+		& = & \left[
+		      y_{1}X, y_{2}X, \cdots, y_{n}X
+		      \right] 
+   \end{array}
+
+   *投影*
+
+** 矩阵乘法
+   *行向量组合*
+
+   *列向量组合*
+
+   *线性转换*
+   - 旋转
+   - 伸缩
+
+   *基转换*
+
+** 线性方程组
+** 行组合
+** 列组合
+** 几何解释
+** 线性变化
+   
+* 向量空间/基
+
+* 四个子空间
+
+* 特征值&特征向量
+  
+* SVD分解
+  
+* 正定矩阵
+
+* COMMENT abc 
+** 方程组的几何解释
+   - 使用矩阵来描述方程组, 什么是几何解释?
+   - $Ax = y$ , 将 $x$ 看做坐标系，对应的是多个曲面的交集
+
+** 矩阵消元
+   - 逐行做差
+
+** 乘法和逆矩阵
+   - 列向量限行组合，行向量限行组合
+   - $A_{ij}$ 公式
+   - $AA^{-1} = I$
+
+** A的LU分
+   1. $A = LU$
+   2. 逐行对 $A$ 进行消元，可以得到一个上三角矩阵
+      - $E_{1} E_{2} \cdots E_{n} A = U$
+      - 因为是行变换，所以是左乘,
+      - 消元的形式(上面的列保持不变，下面的列进行变换)决定 $E_i$ 是满秩下三角矩阵, 可逆，所以: $A = LU$
+      - LU分解, 高斯-若尔当
+	$\[leftA | I\right] -> \left[U L^{-1}\right]$
+   3. rref 分解
+
+** 转置-置换-向量空间R
+   - $A^{T}_{ij} = A_{ji}$
+   - 行置换矩阵: 交换 $I$ 不同的行, 左乘(行组合)
+
+** 求解Ax=0 主变量 特解
+   1. 消元
+   2. 取特解
+   3. 反代，求主元的值
+
+** 求解Ax=b 可解性和解的结构
+** 线性相关性、基、维数
+   - 维数： 任意一组基向量的向量个数
+** 四个基本子空间
+   1. 每一列组成的空间为列空间: C(A)
+   2. $Ax = 0$ , x 所在空间为零空间: null(A)
+   3. 行空间: $C(A^{T})$
+   4. $x^{T} A = 0 \rightarrow A^{T}x = 0$ , 左零空间: $null(A^T)$
+   5. 由 $Ax = 0$ 可知, 行空间和零空间垂直
+   6. 由 $A^{T} x = 0$ 可知，列空间和左零空间垂直
+** 矩阵空间、秩1矩阵和小世界图
+** 图和网络
+   1. 列对应node (n)
+   2. 行对应edge (m): 流出对应-1，流入对应1
+   3. 回路: 线性相关
+   4. 欧拉公式
+      - 守恒: 图中每个节点的流入等于流出，$A^T y = 0$, 零空间对应loop, 所以根据零空间和秩的关系，有
+      - #loop + r = m (列数)
+      - r = n-1, m为边数
+      - 所以，回环数 = 边数 - 节点数 + 1
+** 正交向量与子空间
+   - 正交: $x^{T}y = 0$
+   - 子空间: 数乘，加和闭合
+** 子空间投影
+   1. 投影向量: $P = A (A^{T}A)^{-1}A^{T}$
+   2. 求解比较简单:
+      1) $p = xA$ ， 投影向量落在 $A$ 上，乘以一个投影长度
+      2) 垂线公式: $B - xA$
+      3) A 和垂线垂直: $A^{T} (B-xA) = 0$ , 因此可以得到
+	 \begin{equation*}
+	   \begin{array}{rcl}
+	     0 & = & A^{T} (B - xA) \\
+	     & = & A^{T}B - x A^{T}A \\
+	     \\
+	     x & = & (A^{T}A)^{-1}A^{T}B \\
+	     \\
+	     p & = & Ax \\
+	       & = & A(A^{T}A)^{-1}A^{T}B \\
+	     P & = & A(A^{T}A)^{-1}A^{T}
+	   \end{array}
+	 \end{equation*}
+
+** 投影矩阵和最小二乘
+   1. 最小二乘: $Ax = b$ , b 可能不在列空间，因此将其投影到列空间再求解, 垂线对应的就是误差, 垂直可以保证其最小
+      \begin{equation*}
+	\begin{array}{rcl}
+	  \hat{b} & = & A(A^{T}A)^{-1}A^{T} b \\
+	  \\
+	  A \hat{x} & = & \hat{b} \\
+		  & = & A(A^{T}A)^{-1}A^{T}b \\
+	  A^{T}A\hat{x} & = & A^{T}A(A^{T}A)^{-1}A^{T}b \\
+		  & = &  A^{T}b \\
+	  \hat{x} & = & (A^{T}A)^{-1}A^{T}b
+	\end{array}
+      \end{equation*}
+
+** 正交矩阵和Gram-Schmidt正交化
+   1. 正交矩阵: 任意两个列向量正交
+   2. Gram-Schmidt正交化
+      - 利用投影，给定一组已经正交的，求其它向量到这组向量中每一个的垂线
+      - 完了做一个归一化
+** 行列式及其性质
+** 行列式公式和代数余子式
+** 克拉默法则、逆矩阵、体积
+   1. $A^{-1} = \frac{1}{det(A)} C^{T}$ ，其中，C为A的代数余子式矩阵
+   2. 箱子的的体积： 对应的行列式的值
+      - 底面积乘以高，高是垂线长度，引入投影矩阵化简应该可以得到
+      - 课程中没有做详细证明
+
+** 特征值和特征向量
+   1. $Ax = \lambda x$
+   2. $(A-\lambda I)x = 0 \rightarrow det(A-\lambda I) = 0$ , 奇异矩阵的行列式为0
+   3. $\sum \lambda_i = trace(A)$ , 特征值的和等于对角线元素的和
+
+** 对角化和A的幂
+   1. 通过特征值矩阵实现对角化
+     \begin{equation*}
+       \begin{array}{rcl}
+	 A\cdot x_{i} & = & \lambda_{i} x_{i} \\
+	 A \cdot [x_{1}, x_{2}, \cdots, x_{n}] & = & [\lambda_{1}x_{1}, \lambda_{2}x_{2}, \cdots, \lambda_{n}x_{n}] \\
+		      & = & [x_{1}, x_{2}, \cdots, x_{n}] \left[
+			    \begin{array}{cccc}
+			      \lambda_{1} &&& \\
+			      & \lambda_{2} && \\
+			      && \ddots & \\
+			      &&& \lambda_{4} 
+			    \end{array}
+			    \right] \\
+	 A \cdot S & = & S \cdot \Lambda \\
+	 A & = & S \cdot \Lambda \cdot S^{-1} \\
+	 \Lambda & = & S^{-1} A \cdot S \\
+       \end{array}
+     \end{equation*}
+
+   2. 通过上面可以很快得出矩阵的幂
+      \begin{equation*}
+	\begin{array}{rcl}
+	  A^2 & = & (S \cdot \Lambda S^{-1}) \cdot (S \cdot \Lambda S^{-1}) \\
+	      & = & S \cdot \Lambda^{2} S^{-1} \\
+	  \\
+	  A^{n} & = & S \cdot \Lambda^{n} S^{-1}
+	\end{array}
+      \end{equation*}
+     
+   3. 特征值的大小决定整个系统是否是稳态的， $\lambda > 1$ 会导致发散， $\lambda_{i} < 1$ 则为稳态, 对于微分方程，还需要 $\lambda_{i} > 0$
+
+** 微分方程和exp(At)
+   1. 微分方程 $de^{x}/dx = e^{x}$
+
+** 马尔可夫矩阵 傅立叶级数
+*** 马尔科夫矩阵
+   1. 马尔科夫矩阵: 列之和为1, 对应某个状态下的转移概率
+      \begin{equation*}
+	A = \left[\begin{array}{ccc}
+	      0.1 & 0.4 & 0.8 \\
+	      0.3 & 0.2 & 0.1 \\
+	      0.6 & 0.4 & 0.1 
+	    \end{array}\right]
+      \end{equation*}
+   2. $A - \lambda \cdot I$ 每一列之和为0, 也即 $(A - \lambda \cdot I)^{T} \cdot [1,1,1]^{T} = 0$ 是一个奇异矩阵
+   3. 可以利用矩阵的幂求系统的稳态
+
+*** 傅里叶级数
+    $f(x) = a_{0} + a_{1}sin(x) + b_{1}cos(x) + a_{2}sin(2x) + b_{2}cos(2x) + \cdots$
+
+    基为 $\{sin(ix), cos(ix), i \in [1,n]\}$ , 对应矩阵的点积 $x^{T}y$ , 函数的点积是 $\int_{x_{0}}^{x_n} f(x)g(x) dx$
+
+** 对称矩阵及正定性
+   1. Q = Q^{T}
+   2. 如果Q是正交的，那么 $Q \cdot Q^{T} = I \qquad \rightarrow \qquad Q^{T} = Q^{-1}$
+   3. 如果 $A = A^{T}$ , 那么其特征矩阵是正交矩阵, 对应的有 $A = S \Lambda S^{-1} = Q \Lambda Q^{-1} = Q \Lambda Q^{T}$
+   4. 特征值的符号和主元的符号一样
+
+** 复数矩阵和快速傅里叶变换
+** 正定矩阵和最小值
+   1. 正定矩阵的几种定义:
+      - 满秩，所有特征值大于零
+      - 行列式的值大于零 
+      - $x^T \cdot A \cdot x > 0$ 
+
+** 相似矩阵和若尔当形
+   1. $A = M^{-1}BM \rightarrow \textrm{A similar to B}$
+
+** 奇异值分解
+*** 目标
+    求取单位正交矩阵 $U,V$ ，使得 $A = U \Sigma V^{T}$ , 即将矩阵分解为两个单位正交矩阵和一个对角矩阵
+
+*** 推导
+    特征值和特征向量的性质:
+    $Ax = \lambda x \quad \rightarrow \quad AS = S\Lambda \quad \rightarrow \quad A = S \Lambda S^{-1} \quad \xrightarrow{A=A^T} \quad A = Q \Lambda Q^{T}$
+
+    令 U, V 为单位正交矩阵，所以有: $U^{T} = U^{-1}, V^{T} = V^{-1}$ 。
+   
+    \begin{equation*}
+      \begin{array}{rcl}
+	A & = & U \Sigma V^{T} \\
+	AA^{T}& = & U \Sigma V^{T} \cdot V \Sigma^{T} U^{T} \\
+	& = & U \Sigma \Sigma U^{T} \\
+	& = & U \Sigma^{2} U^{-1}
+      \end{array}
+    \end{equation*}
+   
+    所以，U 是 $AA^{T}$ 的特征矩阵，$\Sigma$ 对角元素是 $AA^{T}$ 特征值的平方根。
+
+    同样的可以得到: V 是 $A^{T}A$ 的特征矩阵。
+
+*** 解释
+    给定矩阵 $A \in R^{m \times n},\ rank(A) = r$ ，假设:
+    - $[v_{1}, v_{2}, \cdots, v_{r}]$ 是 A 的行空间的一组标准正交基
+    - $[v_{r+1}, v_{r+2}, \cdots, v_{n}]$ 是 A 的零空间的一组标准正交基, $v_i^{T} A = 0$
+    - $[u_{1}, u_{2}, \cdots, u_{r}]$ 是 A 的列空间的一组标准正交基
+    - $[u_{r+1}, u_{r+2}, \cdots, u_{m}]$ 是 A 的左零空间的一组标准正交基, $A u_i^{t} = 0$
+    - $v_i \in R^{n \times 1}, u_i \in R^{m \times 1}$ 
+     
+    *推导*
+    1. 先考虑前r个向量，因为 $v_i$ 是 A 的行空间基，可以张得行空间中的任意向量，而 $u_{i}^{T}A$ 表示 A 的行向量的线性组合，
+       必然位于 A 的行空间中, 因此有:
+       \begin{equation*}
+	 \begin{array}{rcl}
+	   u_i^{T}A & = & \sum\limits_{j=0}^{r} \sigma_{j} v_{j}^{T} \qquad i \leq r, \sigma_{j} \in R \\ 
+	   \\
+	   u_i^{T}Av_{i} & = & \sum\limits_{j=0}^{r} \sigma_{j} v_{j}^{T} v_{i}\\ 
+		    & = & \sigma_{i} \\
+		    & = & \sigma_{i} u_{i}^{T} u_{i} \\
+		    & = & u_{i}^{T} \sigma_{i} u_{i} \\
+	   \\
+	   Av_{i} & = & \sigma_{i} u_{i}, i \leq r
+	 \end{array}
+       \end{equation*}
+      
+       也就是说，A可以将其行空间的任意一个基向量变换到其列空间中对应的某一个基向量方向上(最后一步化简需要确认是否OK)
+
+    2. 因为 $v_i, i>r$ 位于 A 的零空间，所有有 $Av_i = 0$ , 因此取 $\sigma_{i} = 0$ , 即可满足上式
+
+    3. 将其写成矩阵形式有: $AV = U \Sigma \quad \rightarrow \quad A = U \Sigma V^{-1} \quad \rightarrow \quad V^{T}$ , 其中
+       \begin{equation*}
+	 \begin{array}{rcl}
+	   U & = & [u_{1}, u_{2}, \cdots, u_{m}] \in R^{m \times m} \\
+	   V & = & [v_{1}, v_{2}, \cdots, v_{n}] \in R^{n \times n} \\
+	   \Sigma & = & \left[
+			 \begin{array}{ccccccc}
+			   \sigma_{1} &           &       &            &  &  &  \\
+				      & \sigma_{2} &       &            &  &  &  \\
+				      &           & \ddots &            &  &  &  \\
+				      &           &        & \sigma_{r} & &  &  \\
+				      &           &        &           & 0 &        &  \\
+				      &           &        &           &   & \ddots &  \\
+				      &           &        &           &   &        & 0\\
+			 \end{array}
+			 \right] \in R^{m \times n}
+	 \end{array}
+       \end{equation*}
+      
+    4. 上式正好是SVD的分解定义，因此可以得出SVD分解的解释:
+       1) 给定任意一个矩阵 A
+       2) 都可以找到其行空间和零空间的一组标准正交基 $V$ , 列空间和左零空间中的一组标准正交基 $U$ 
+       3) 使得 $V$ 经过 A 线性变换之后得到 $U$ 这组基乘以一个特定的缩放因子
+
+** 线性变换及对应矩阵
+** 基变换和图像压缩
+** 左右逆和伪逆

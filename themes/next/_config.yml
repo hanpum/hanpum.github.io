@@ -201,8 +201,7 @@ links_settings:
   layout: block
 
 links:
-  #百度: http://www.baidu.com
-  #Google: http://www.google.com
+  PaperWithCode: https://paperswithcode.com/ 
 
 # Table of Contents in the Sidebar
 # Front-matter variable (unsupport wrap expand_all).

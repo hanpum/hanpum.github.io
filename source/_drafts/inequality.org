@@ -1,0 +1,32 @@
+#+TITLE: 不等式
+#+AUTHOR:hanpu.mwx
+#+EMAIL: hanpu.mwx@gmail.com
+#+DATE: <2020-06-05 Fri>
+#+UPDATED: <2020-06-05 Fri>
+#+LATEX_HEADER: \usepackage{xeCJK} 
+#+LATEX_HEADER: \usepackage{natbib}
+#+LATEX_HEADER: \usepackage[version=3]{mhchem}
+#+LATEX_HEADER: \usepackage{makeidx}
+#+LATEX_HEADER: \usepackage{amssymb}
+#+LATEX_HEADER: \makeindex
+#+TAGS: MATH
+#+CATEGORIES: NOTES
+#+PROPERTY: header-args :output-dir ./inequality
+#+OPTIONS: ^:{}
+
+* [[https://baike.baidu.com/item/%E5%9D%87%E5%80%BC%E4%B8%8D%E7%AD%89%E5%BC%8F][均值不等式]]
+  $H_n \leq G_n \leq A_n \leq Q_n$ : 调和平均数不超过几何平均数，几何
+  平均数不超过算数平均数，算数平均数不超过平方平均数
+  
+  *定义*
+  - 调和平均数
+    $H_n = N \cdot \left(\sum\limits_{i}^{N}\frac{1}{x_i}\right)^{-1}$
+
+  - 几何平均数
+    $G_n = \left(\prod\limits_{i}x_i\right)^{1/N}$
+
+  - 算数平均数
+    $A_n = \frac{1}{N} \sum\limits_{i}^{N}x_i$
+
+  - 平方平均数
+    $Q_n = \frac{1}{N} \sum\limits_{i}^{N}x_i^{2}$
