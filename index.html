@@ -197,14 +197,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>18k</span>
+              <span>19k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>16 分钟</span>
+              <span>17 分钟</span>
             </span>
 
         </div>
@@ -218,21 +218,27 @@
       
           <div id="content">
 
-<div id="outline-container-org031d5e8" class="outline-2">
-<h2 id="org031d5e8">概述</h2>
-<div class="outline-text-2" id="text-org031d5e8">
+<div id="outline-container-org536dd99" class="outline-2">
+<h2 id="org536dd99">概述</h2>
+<div class="outline-text-2" id="text-org536dd99">
 </div>
-<div id="outline-container-orge8fdbcf" class="outline-3">
-<h3 id="orge8fdbcf">词向量</h3>
-<div class="outline-text-3" id="text-orge8fdbcf">
+<div id="outline-container-org8294636" class="outline-3">
+<h3 id="org8294636">词向量</h3>
+<div class="outline-text-3" id="text-org8294636">
 <p>
-<code>word vector</code>, 从字面意思来理解，就是词向量。也就是使用一个向量来表示一个词, 其好处就是能够使用数
-学语言来描述文字符号，从而可以使用数学工具对齐进行分析。
+<code>word vector</code>, 从字面意思来理解，就是词向量。也就是使用一个向量来表示一个词
 </p>
 
 \begin{equation*}
   \mathbf{u} = [x_{0}, x_{1}, \cdots, x_{d}]^T
 \end{equation*}
+
+<p>
+其好处就是能够使用数学语言来描述文字符号，从而可以使用数学工具对其进行分析。其中最有名的当属如下
+\(vector(King) - vector(Man) + vecotr(Women) \sim vector(Queue)\) , 也就是 <code>King</code> 对应的词向量减去
+<code>Man</code> 对应的词向量, 然后加上 <code>Women</code> 对应的词向量得到一个向量，所有词向量中，和它最接近的是
+<code>Queue</code> , 也就是通过简单的向量加减即可实现语义计算。
+</p>
 
 <p>
 从发展历史来看，词向量大致可以分为如下几种:
@@ -249,9 +255,9 @@
 </div>
 </div>
 
-<div id="outline-container-orgee5cd49" class="outline-3">
-<h3 id="orgee5cd49">特征向量</h3>
-<div class="outline-text-3" id="text-orgee5cd49">
+<div id="outline-container-orge1a7784" class="outline-3">
+<h3 id="orge1a7784">特征向量</h3>
+<div class="outline-text-3" id="text-orge1a7784">
 <p>
 特征向量属于特征工程时代的产物，就是人工设计一组特征(一般是离散的), 然后提取对应的特征值得到一组
 向量。比如，假设有如下三个特征维度:
@@ -287,9 +293,9 @@ NLP -> [3,1,0]</pre>
 </div>
 </div>
 
-<div id="outline-container-org3d498ed" class="outline-3">
-<h3 id="org3d498ed">共现矩阵</h3>
-<div class="outline-text-3" id="text-org3d498ed">
+<div id="outline-container-orgdb9e295" class="outline-3">
+<h3 id="orgdb9e295">共现矩阵</h3>
+<div class="outline-text-3" id="text-orgdb9e295">
 <p>
 共现矩阵的依据如下:
 </p>
@@ -322,7 +328,7 @@ all is well that ends well</pre>
 一，于是可以得到如下矩阵:
 </p>
 
-<table id="org9aa3d2c" border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+<table id="org4f05cd3" border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
 
 
 <colgroup>
@@ -570,9 +576,9 @@ all is well that ends well</pre>
 </div>
 </div>
 
-<div id="outline-container-org376e0e2" class="outline-3">
-<h3 id="org376e0e2">任务导向</h3>
-<div class="outline-text-3" id="text-org376e0e2">
+<div id="outline-container-org7225d1f" class="outline-3">
+<h3 id="org7225d1f">任务导向</h3>
+<div class="outline-text-3" id="text-org7225d1f">
 <p>
 基于任务导向的词向量学习方法和上面的共现矩阵一样，其最基础的依据也是根据单词的上下文来推测其含义。
 不过，实现的方式和共现矩阵却大相径庭，其策略是以终为始, 设计一个或者一组任务，将每个单词或者字映
@@ -593,9 +599,9 @@ glove (<a class="org-ref-reference" href="#pennington-2014-glove">pennington-201
 </div>
 </div>
 
-<div id="outline-container-org1950ec8" class="outline-2">
-<h2 id="org1950ec8">设计思路</h2>
-<div class="outline-text-2" id="text-org1950ec8">
+<div id="outline-container-org38b7b8c" class="outline-2">
+<h2 id="org38b7b8c">设计思路</h2>
+<div class="outline-text-2" id="text-org38b7b8c">
 <p>
 word2vec 于 13 年在 <a class="org-ref-reference" href="#mikolov-2013-effic-estim">mikolov-2013-effic-estim</a>,<a class="org-ref-reference" href="#mikolov-2013-distr-repres">mikolov-2013-distr-repres</a> 这两篇 paper 中提出来
 的。其主要设计思路如上面所说，就是使用单词周围的单词来预测给定单词的概率，依实现方式可以分为
@@ -604,13 +610,13 @@ word2vec 于 13 年在 <a class="org-ref-reference" href="#mikolov-2013-effic-es
 </div>
 </div>
 
-<div id="outline-container-orgcd9578f" class="outline-2">
-<h2 id="orgcd9578f">skip-gram</h2>
-<div class="outline-text-2" id="text-orgcd9578f">
+<div id="outline-container-org93771f7" class="outline-2">
+<h2 id="org93771f7">skip-gram</h2>
+<div class="outline-text-2" id="text-org93771f7">
 </div>
-<div id="outline-container-org7a9f01d" class="outline-3">
-<h3 id="org7a9f01d">目标函数</h3>
-<div class="outline-text-3" id="text-org7a9f01d">
+<div id="outline-container-org9ad6343" class="outline-3">
+<h3 id="org9ad6343">目标函数</h3>
+<div class="outline-text-3" id="text-org9ad6343">
 <p>
 给定一个句子 \(S = [w_0, w_1, \cdots, w_T]\), 以及句子中的一个位置 \(t, t \in [0, T]\) , \(S_t\) 表示位
 置 \(t\) 处的单词，skip-gram的目标是 通过 \(S_t\) 来预测其周围单词出现的概率。
@@ -674,30 +680,30 @@ word2vec 于 13 年在 <a class="org-ref-reference" href="#mikolov-2013-effic-es
 </div>
 </div>
 
-<div id="outline-container-org50a4557" class="outline-3">
-<h3 id="org50a4557">条件概率</h3>
-<div class="outline-text-3" id="text-org50a4557">
+<div id="outline-container-orgb0d317a" class="outline-3">
+<h3 id="orgb0d317a">条件概率</h3>
+<div class="outline-text-3" id="text-orgb0d317a">
 <p>
 为了描述方面，上面 \(w_t, w_{t+i}\) 表示的是一个具体的单词，由于每个单词都对应一个向量，所以 \(\mathbf{w_t},
    \mathbf{w_{t+i}}\) 也可以等价为对应的向量，以后都按照这种方式来表示。
 </p>
 
-     \begin{equation*}
-\mathbf{W} = \left[
-\begin{array}{cccc}
-  w_{00} & w_{01} & \cdots & w_{0D} \\
-  w_{10} & w_{11} & \cdots & w_{1D} \\
-  \vdots & \vdots & \ddots & \vdots \\
-  w_{V0} & w_{V1} & \cdots & w_{VD} 
-\end{array} \right] 
-= \left[
-\begin{array}{c}
-  \mathbf{w_{0}}^T \\
-  \mathbf{w_{1}}^T \\
-  \vdots \\
-  \mathbf{w_{V}}^T
-\end{array} \right]
-     \end{equation*}
+\begin{equation*}
+  \mathbf{W} = \left[
+    \begin{array}{cccc}
+      w_{00} & w_{01} & \cdots & w_{0D} \\
+      w_{10} & w_{11} & \cdots & w_{1D} \\
+      \vdots & \vdots & \ddots & \vdots \\
+      w_{V0} & w_{V1} & \cdots & w_{VD} 
+    \end{array} \right] 
+  = \left[
+    \begin{array}{c}
+      \mathbf{w_{0}}^T \\
+      \mathbf{w_{1}}^T \\
+      \vdots \\
+      \mathbf{w_{V}}^T
+    \end{array} \right]
+\end{equation*}
 
 
 <p>
@@ -706,17 +712,17 @@ word2vec 于 13 年在 <a class="org-ref-reference" href="#mikolov-2013-effic-es
 <code>word2vec</code> 中采用的是 <a href="https://baike.baidu.com/item/%E4%BD%99%E5%BC%A6%E7%9B%B8%E4%BC%BC%E5%BA%A6/17509249" target="_blank" rel="noopener">余弦相似度</a>，也即: 
 </p>
 
-   \begin{equation*}
-     cos(\mathbf{w}_{i}, \mathbf{w}_{j}) = \frac
-     {
-\mathbf{w}_{i}\cdot \mathbf{w}_{j}
-     }
-     {
-\parallel \mathbf{w}_{i} \parallel
-\cdot
-\parallel \mathbf{w}_{j} \parallel
-     }
-   \end{equation*}
+\begin{equation*}
+  cos(\mathbf{w}_{i}, \mathbf{w}_{j}) = \frac
+  {
+    \mathbf{w}_{i}\cdot \mathbf{w}_{j}
+  }
+  {
+    \parallel \mathbf{w}_{i} \parallel
+    \cdot
+    \parallel \mathbf{w}_{j} \parallel
+  }
+\end{equation*}
 
 <p>
 这个公式可以由欧几里得点积公式
@@ -740,8 +746,7 @@ word2vec 于 13 年在 <a class="org-ref-reference" href="#mikolov-2013-effic-es
 </p>
 
 <p>
-在实际使用中，$\color{red}{如果假设 \mathbf{w}_i, \mathbf{w}_j 都是单位向量}(待确认)$，那么，余弦相似度中的分母可
-以忽略。于是可以得到未归一化的概率:
+在 <code>word2vec</code> 的设计中，余弦相似度中的分母直接被忽略掉了, 具体原因在后面细说，于是可以得到未归一化的概率:
 </p>
 
 \begin{equation*} 
@@ -754,14 +759,14 @@ word2vec 于 13 年在 <a class="org-ref-reference" href="#mikolov-2013-effic-es
 
 \begin{equation} \label{eq-softmax}
   p(\mathbf{w}_{i}|\mathbf{w}_{j}) \ =\ \mathcal{S}(\mathbf{w_i} \cdot \mathbf{w_j}) \ =\ \frac{exp(\mathbf{w}_{i} \cdot \mathbf{w}_{j})}
-				   {\sum\limits_{j=0}^{V} exp(\mathbf{w}_{j} \cdot \mathbf{w}_{j})}
+  {\sum\limits_{j=0}^{V} exp(\mathbf{w}_{j} \cdot \mathbf{w}_{j})}
 \end{equation}
 </div>
 </div>
 
-<div id="outline-container-orgdf0d42f" class="outline-3">
-<h3 id="orgdf0d42f">优化公式</h3>
-<div class="outline-text-3" id="text-orgdf0d42f">
+<div id="outline-container-orgeb08124" class="outline-3">
+<h3 id="orgeb08124">优化公式</h3>
+<div class="outline-text-3" id="text-orgeb08124">
 <p>
 给出了 <code>loss</code> 函数之后，使用梯度下降算法进行优化即可, 先计算梯度
 </p>
@@ -889,13 +894,13 @@ cs224n 中给出的答案是简单的将其做一个平均得到最终的向量�
 </div>
 </div>
 
-<div id="outline-container-orga3e5911" class="outline-2">
-<h2 id="orga3e5911">CBOW</h2>
-<div class="outline-text-2" id="text-orga3e5911">
+<div id="outline-container-org059a872" class="outline-2">
+<h2 id="org059a872">CBOW</h2>
+<div class="outline-text-2" id="text-org059a872">
 </div>
-<div id="outline-container-orgc9325dc" class="outline-3">
-<h3 id="orgc9325dc">目标函数</h3>
-<div class="outline-text-3" id="text-orgc9325dc">
+<div id="outline-container-orgbc5b210" class="outline-3">
+<h3 id="orgbc5b210">目标函数</h3>
+<div class="outline-text-3" id="text-orgbc5b210">
 <p>
 和 <code>skip-gram</code> 相比， <code>cbow</code> 的模型架构更接近传统意义的神经网络。
 </p>
@@ -939,13 +944,13 @@ cs224n 中给出的答案是简单的将其做一个平均得到最终的向量�
 </div>
 </div>
 
-<div id="outline-container-org094d673" class="outline-2">
-<h2 id="org094d673">具体实现</h2>
-<div class="outline-text-2" id="text-org094d673">
+<div id="outline-container-orgb5c4d6e" class="outline-2">
+<h2 id="orgb5c4d6e">具体实现</h2>
+<div class="outline-text-2" id="text-orgb5c4d6e">
 </div>
-<div id="outline-container-org7bfe463" class="outline-3">
-<h3 id="org7bfe463">overview</h3>
-<div class="outline-text-3" id="text-org7bfe463">
+<div id="outline-container-orgdb9de5a" class="outline-3">
+<h3 id="orgdb9de5a">overview</h3>
+<div class="outline-text-3" id="text-orgdb9de5a">
 <p>
 本节讲一下 <a class="org-ref-reference" href="#mikolov-2013-distr-repres">mikolov-2013-distr-repres</a> 中提到的一些优化技巧。
 </p>
@@ -977,9 +982,9 @@ cs224n 中给出的答案是简单的将其做一个平均得到最终的向量�
 </div>
 </div>
 
-<div id="outline-container-orga261b25" class="outline-3">
-<h3 id="orga261b25">hierarchical softmax</h3>
-<div class="outline-text-3" id="text-orga261b25">
+<div id="outline-container-orgeb0b48b" class="outline-3">
+<h3 id="orgeb0b48b">hierarchical softmax</h3>
+<div class="outline-text-3" id="text-orgeb0b48b">
 <p>
 原始softmax的计算过程是一个扁平决策的过程，而 <code>hierarchical softmax</code> 使用的是决策树。
 </p>
@@ -988,11 +993,9 @@ cs224n 中给出的答案是简单的将其做一个平均得到最终的向量�
 其计算模型如下图所示
 </p>
 
-
-<div class="figure">
-<p><img src="hierarchical-softmax.png">
+<p>
+<img src="hierarchical-softmax.png">]]
 </p>
-</div>
 
 <p>
 词表中的每个单词都对应决策树中的一个叶子节点(图中的方框), 每个中间节点(图中的圆圈) 对应有一个向
@@ -1018,19 +1021,19 @@ cs224n 中给出的答案是简单的将其做一个平均得到最终的向量�
 
 \begin{equation} \label{eq-sigmoid}
   \begin{array}{rcl}
-  p(n_i|w_t) & = & \Bigg\{\begin{array}{cr}
-			 \frac{1}{1 + e^{-u_{i} \cdot w_{t}}}, & \quad l_{i} = 1 \\
-			 \\
-			 1 - \frac{1}{1 + e^{-u_{i} \cdot w_{t}}}, & \quad l_{i} = 0
-		       \end{array} \\
-	     \\    
-	     & = & \left( \frac{1}{1 + e^{-u_{i} \cdot w_{t}}} \right)^{l_{i}}
-		   \left( 1 - \frac{1}{1 + e^{-u_{i} \cdot w_{t}}} \right)^{1-l_{i}} \\
+    p(n_i|w_t) & = & \Bigg\{\begin{array}{cr}
+			      \frac{1}{1 + e^{-u_{i} \cdot w_{t}}}, & \quad l_{i} = 1 \\
+			      \\
+			      1 - \frac{1}{1 + e^{-u_{i} \cdot w_{t}}}, & \quad l_{i} = 0
+			    \end{array} \\
+    \\    
+	       & = & \left( \frac{1}{1 + e^{-u_{i} \cdot w_{t}}} \right)^{l_{i}}
+		     \left( 1 - \frac{1}{1 + e^{-u_{i} \cdot w_{t}}} \right)^{1-l_{i}} \\
     \\
-	     & = & \sigma(u_{j} \cdot w_{t})^{l_{i}}
-		   \times
-		   \left(1 - \sigma(u_{j} \cdot w_{t})\right)^{1-l_{i}}
-    \end{array}
+	       & = & \sigma(u_{j} \cdot w_{t})^{l_{i}}
+		     \times
+		     \left(1 - \sigma(u_{j} \cdot w_{t})\right)^{1-l_{i}}
+  \end{array}
 \end{equation}
 
 <p>
@@ -1059,8 +1062,8 @@ cs224n 中给出的答案是简单的将其做一个平均得到最终的向量�
     \partial log \sigma(x) / \partial x & = & 1- \sigma(x) \\
     \\
     \partial log\ \left( 1-\sigma(x) \right) / \partial x  & = & \frac{1}{1-\sigma(x)}
-								      \cdot -1 \cdot
-								      \sigma(x) \cdot \left[ 1 - \sigma(x) \right] & = & -\sigma(x) \\
+								 \cdot -1 \cdot
+								 \sigma(x) \cdot \left[ 1 - \sigma(x) \right] & = & -\sigma(x) \\
   \end{array}
 \end{equation*}
 
@@ -1071,13 +1074,13 @@ cs224n 中给出的答案是简单的将其做一个平均得到最终的向量�
 \begin{equation*}
   \begin{array}{rclcl}
     \frac{\partial \mathcal{L}(w_{i})}{ \partial w_{i}} & = & -\sum\limits_{j=0}^{M}
-						       l_{j} \cdot \left[ 1- \sigma(u_{j} \cdot w_{t}) \right]
-						       +
+							      l_{j} \cdot \left[ 1- \sigma(u_{j} \cdot w_{t}) \right]
+							      +
 							      (1-l_{j}) \cdot - \sigma(u_{j} \cdot w_{t}) 
-							& = & -\sum\limits_{j=0}^{M}
-							      \left[
-							      l_{i} - \sigma(u_{j} \cdot w_{t}) 
-							      \right] \cdot u_{j} \\
+    & = & -\sum\limits_{j=0}^{M}
+	  \left[
+	  l_{i} - \sigma(u_{j} \cdot w_{t}) 
+	  \right] \cdot u_{j} \\
     \\
     \frac{\partial \mathcal{L}(w_{i})}{ \partial u_{j}} & = & -\left[
 							      l_{j} - \sigma(u_{j} \cdot w_{t}) 
@@ -1093,9 +1096,9 @@ cs224n 中给出的答案是简单的将其做一个平均得到最终的向量�
 </div>
 </div>
 
-<div id="outline-container-org2e4b948" class="outline-3">
-<h3 id="org2e4b948">Huffman编码</h3>
-<div class="outline-text-3" id="text-org2e4b948">
+<div id="outline-container-orgfd30c83" class="outline-3">
+<h3 id="orgfd30c83">Huffman编码</h3>
+<div class="outline-text-3" id="text-orgfd30c83">
 <p>
 上一节在分析 <code>hierarchical softmax</code> 的时候，使用的决策树是一颗完全二叉树，也就是所有单词无差别对
 待，全部分布在树的最后一层或倒数第二层的右边，如果将每个单词出现的概率作为其权重，那么可以得到一
@@ -1121,9 +1124,9 @@ cs224n 中给出的答案是简单的将其做一个平均得到最终的向量�
 </div>
 </div>
 
-<div id="outline-container-org5262568" class="outline-3">
-<h3 id="org5262568">交叉熵</h3>
-<div class="outline-text-3" id="text-org5262568">
+<div id="outline-container-org2cb9784" class="outline-3">
+<h3 id="org2cb9784">交叉熵</h3>
+<div class="outline-text-3" id="text-org2cb9784">
 <p>
 为了分析接下来的负采样技术，我们先换一个角度来看 <code>loss</code> 函数, 以 <code>CBOW</code> 为例。
 </p>
@@ -1178,15 +1181,15 @@ cs224n 中给出的答案是简单的将其做一个平均得到最终的向量�
 分布来拟合这个真实分布，这个拟合分布记作 \(p(x_i)\) ，那么，可以通过 <a href="https://baike.baidu.com/item/%E7%9B%B8%E5%AF%B9%E7%86%B5" target="_blank" rel="noopener">KL散度/相对熵</a> 来度量这个拟合的逼近程度:
 </p>
 
-\begin{equation*}
-  \begin{array}{rcl}
-    KL(q,p) & = & \sum_{i} q(x_{i}) \cdot log\ \frac{q(x_{i})}{p(x_{i})} \\
-    \\
-	   & = & \sum_{i} \left[ q(x_{i}) \cdot log\ q(x_{i})  - q(x_{i}) \cdot log\ p(x_{i}) \right] \\
-    \\
-	   & = & -H(p) - \sum_{i} q(x_{i}) \cdot log\ p(x_{i})
-  \end{array}
-\end{equation*}
+   \begin{equation*}
+     \begin{array}{rcl}
+KL(q,p) & = & \sum_{i} q(x_{i}) \cdot log\ \frac{q(x_{i})}{p(x_{i})} \\
+\\
+       & = & \sum_{i} \left[ q(x_{i}) \cdot log\ q(x_{i})  - q(x_{i}) \cdot log\ p(x_{i}) \right] \\
+\\
+       & = & -H(p) - \sum_{i} q(x_{i}) \cdot log\ p(x_{i})
+     \end{array}
+   \end{equation*}
 
 
 <p>
@@ -1211,12 +1214,12 @@ KL 散度越小，说明两个分布越接近。上式中第一项是 <code>q</c
 应的分布向量称为 <code>one-hot</code> 向量。由此可得:
 </p>
 
-\begin{equation*}
-  \begin{array}{rcl} 
-    -\sum_{i} q(x_{i}) \cdot log\ p(w_{i}|h_{t}) & = & - 1 \cdot log\ p(w_{t}|h_{t}) - \sum_{i, i\neq t} 0 \cdot log\ p(w_{i}|h_{t}) \\
-						 & = & - log\ p(w_{t}|h_{t})
-  \end{array}
-\end{equation*}
+   \begin{equation*}
+     \begin{array}{rcl} 
+-\sum_{i} q(x_{i}) \cdot log\ p(w_{i}|h_{t}) & = & - 1 \cdot log\ p(w_{t}|h_{t}) - \sum_{i, i\neq t} 0 \cdot log\ p(w_{i}|h_{t}) \\
+					     & = & - log\ p(w_{t}|h_{t})
+     \end{array}
+   \end{equation*}
 
 <p>
 这是给定一个单词对应的 <code>loss</code> , 如果在整个句子上求平均，正好是 \eqref{eq-cbow-loss} 。所以，\eqref{eq-cbow-loss}
@@ -1225,9 +1228,9 @@ KL 散度越小，说明两个分布越接近。上式中第一项是 <code>q</c
 </div>
 </div>
 
-<div id="outline-container-orgf94ed4c" class="outline-3">
-<h3 id="orgf94ed4c">negative sampling</h3>
-<div class="outline-text-3" id="text-orgf94ed4c">
+<div id="outline-container-org92786d5" class="outline-3">
+<h3 id="org92786d5">negative sampling</h3>
+<div class="outline-text-3" id="text-org92786d5">
 <p>
 上面的分析给出了 <code>softmax loss</code> 函数的本质:
 </p>
@@ -1339,9 +1342,9 @@ KL 散度越小，说明两个分布越接近。上式中第一项是 <code>q</c
 </div>
 </div>
 
-<div id="outline-container-org5db2650" class="outline-3">
-<h3 id="org5db2650">sub-sampling</h3>
-<div class="outline-text-3" id="text-org5db2650">
+<div id="outline-container-org63f5297" class="outline-3">
+<h3 id="org63f5297">sub-sampling</h3>
+<div class="outline-text-3" id="text-org63f5297">
 <p>
 <code>sub-sampling</code> 技术, 主要是为了解决前面共现矩阵面临的同样问题，就是语料中某些词语的频率远高于其
 它词，在一定程度上会影响词向量的训练。因此在训练过程中，会根据某个词出现的频率高低，按照一定的概
@@ -1373,14 +1376,14 @@ KL 散度越小，说明两个分布越接近。上式中第一项是 <code>q</c
 </div>
 </div>
 
-<div id="outline-container-org86df42e" class="outline-3">
-<h3 id="org86df42e">phrase</h3>
-<div class="outline-text-3" id="text-org86df42e">
+<div id="outline-container-org29f192f" class="outline-3">
+<h3 id="org29f192f">phrase</h3>
+<div class="outline-text-3" id="text-org29f192f">
 <p>
-在 <a class="org-ref-reference" href="#mikolov-2013-distr-repres">mikolov-2013-distr-repres</a> 中，作者还提到了一个点，就是有些专有名词由多个单词组成，但
-是其意义并非简单的组成它的几个单词的组合，比如， <code>New York</code> , <code>Houston Rockets</code> , 这个时候更合理
-的是将这些作为一个单词对待。对此作者提出了一个简单的 <code>data-driven</code> 的方法，就是统计语料中所有
-<code>bi-gram</code> , 计算得到一个 <code>score</code> 
+在 <a class="org-ref-reference" href="#mikolov-2013-distr-repres">mikolov-2013-distr-repres</a> 中，作者还提到了一个点，就是有些专有名词由多个单词组成，但是其
+意义并非简单的组成它的几个单词的组合，比如， <code>New York</code> , <code>Houston Rockets</code> , 这个时候更合理的是
+将这些作为一个单词对待。对此作者提出了一个简单的 <code>data-driven</code> 的方法，就是统计语料中所
+有~bi-gram~ , 计算得到一个 <code>score</code>
 </p>
 
 \begin{equation*}
@@ -1392,27 +1395,77 @@ KL 散度越小，说明两个分布越接近。上式中第一项是 <code>q</c
 </p>
 
 <p>
-不过这个想法只在 paper 中写到了，源码中并没有看到相关实现。
+代码实现见 <code>word2vec</code> 代码仓库中的 <code>src/word2phrase.c</code> 。
 </p>
 </div>
 </div>
 </div>
 
-<div id="outline-container-org82b9f9a" class="outline-2">
-<h2 id="org82b9f9a">总结</h2>
+<div id="outline-container-orge2abf83" class="outline-2">
+<h2 id="orge2abf83">评估</h2>
+<div class="outline-text-2" id="text-orge2abf83">
 </div>
-<div id="outline-container-org3c207fc" class="outline-2">
-<h2 id="org3c207fc">References</h2>
-<div class="outline-text-2" id="text-org3c207fc">
+<div id="outline-container-orga25bb81" class="outline-3">
+<h3 id="orga25bb81">测试集</h3>
+<div class="outline-text-3" id="text-orga25bb81">
+<ol class="org-ol">
+<li>Word Vector Analogies</li>
+<li><a href="http://alfonseca.org/eng/research/wordsim353.html" target="_blank" rel="noopener">WordSim353</a></li>
+</ol>
+</div>
+</div>
+
+<div id="outline-container-orgd1695b5" class="outline-3">
+<h3 id="orgd1695b5">intrinsic</h3>
+</div>
+<div id="outline-container-org2170fd3" class="outline-3">
+<h3 id="org2170fd3">extrinsic</h3>
+</div>
+<div id="outline-container-orgce6b619" class="outline-3">
+<h3 id="orgce6b619">优化</h3>
+<div class="outline-text-3" id="text-orgce6b619">
+<ol class="org-ol">
+<li>多义词</li>
+<li>歧义</li>
+</ol>
+</div>
+</div>
+</div>
+<div id="outline-container-org4731f8e" class="outline-2">
+<h2 id="org4731f8e">TIPS</h2>
+<div class="outline-text-2" id="text-org4731f8e">
+<ol class="org-ol">
+<li><code>skip-gram</code> 的效果比 <code>cbow</code> 要好，因为 <code>skip-gram</code> 是通过中心单词预测周围其他单词，而 <code>cbow</code> 是通
+过周围多个单词预测中心单词，相对而言， <code>skip-gram</code> 的任务要求更高，从而强迫模型需要学习表达能力
+更强的词向量。</li>
+
+<li><code>word2vec</code> 的训练使用的是多线程技术, 多个线程同时更新同一份权重，但是在训练过程中并没有做线程之
+间的加锁同步。虽然冲突会导致参数更新不准确，但是对于整体训练来说这个影响并不大，而加锁操作会带
+来时间消耗，影响训练速度, 两害相权取其轻，所以这里选择了不加锁的方案，更详细的讨论可以参考 <a href="https://www.zhihu.com/question/2927308" target="_blank" rel="noopener">这个</a> 。</li>
+
+<li>关于 <code>word2vec</code> 网上有一些很好的资料，下面是写作本文中查阅的一些，paper列表见参考文献部分:
+<ul class="org-ul">
+<li><a href="http://mccormickml.com/2016/04/19/word2vec-tutorial-the-skip-gram-model/" target="_blank" rel="noopener">Word2Vec Tutorial - The Skip-Gram Model</a> : 对应 <a class="org-ref-reference" href="#mikolov-2013-effic-estim">mikolov-2013-effic-estim</a> 的tutorial</li>
+<li><a href="http://mccormickml.com/2017/01/11/word2vec-tutorial-part-2-negative-sampling/" target="_blank" rel="noopener">Word2Vec Tutorial Part 2 - Negative Sampling</a>: 对应 <a class="org-ref-reference" href="#mikolov-2013-distr-repres">mikolov-2013-distr-repres</a> 的tutorial</li>
+<li><a href="https://www.cnblogs.com/peghoty/p/3857839.html" target="_blank" rel="noopener">word2vec中的数学原理详解</a>:  很详细的一份笔记</li>
+<li><a href="https://www.hankcs.com/nlp/word2vec.html" target="_blank" rel="noopener">word2vec原理推导与代码分析</a>: 关于 word2vec 的blog，文章最后给出了各种编程语言实现版本</li>
+</ul></li>
+</ol>
+</div>
+</div>
+
+<div id="outline-container-orgf514cc2" class="outline-2">
+<h2 id="orgf514cc2">References</h2>
+<div class="outline-text-2" id="text-orgf514cc2">
 <p>
 
-<ul class="org-ref-bib"><li><a id="pennington-2014-glove">[pennington-2014-glove]</a> <a name="pennington-2014-glove"></a>Jeffrey Pennington, Richard Socher, & Christopher Manning, Glove: Global Vectors for Word Representation, nil, in in: Proceedings of the 2014 Conference on Empirical
+<ul class="org-ref-bib"><li><a id="pennington-2014-glove">[pennington-2014-glove]</a> <a name="pennington-2014-glove"></a>Jeffrey Pennington, Richard Socher, & Christopher Manning, Glove: Global Vectors for Word Representation, in in: Proceedings of the 2014 Conference on Empirical
                   Methods in Natural Language Processing (EMNLP), edited by (2014)</li>
 <li><a id="mikolov-2013-effic-estim">[mikolov-2013-effic-estim]</a> <a name="mikolov-2013-effic-estim"></a>Mikolov, Chen, Corrado, & Dean, Efficient Estimation of Word Representations in  Vector Space, <i>CoRR</i>,  (2013). <a href="http://arxiv.org/abs/1301.3781v3" target="_blank" rel="noopener">link</a>.</li>
 <li><a id="mikolov-2013-distr-repres">[mikolov-2013-distr-repres]</a> <a name="mikolov-2013-distr-repres"></a>Mikolov, Sutskever, Chen, , Corrado & Dean, Distributed Representations of Words and Phrases and  Their Compositionality, <i>CoRR</i>,  (2013). <a href="http://arxiv.org/abs/1310.4546v1" target="_blank" rel="noopener">link</a>.</li>
 <li><a id="bengio-2003-neural-probab">[bengio-2003-neural-probab]</a> <a name="bengio-2003-neural-probab"></a>Bengio, Ducharme, Vincent, Pascal & Jauvin, A Neural Probabilistic Language Model, <i>Journal of machine learning research</i>, <b>3(Feb)</b>, 1137-1155 (2003). <a href="http://www.jmlr.org/papers/volume3/bengio03a/bengio03a.pdf" target="_blank" rel="noopener">link</a>.</li>
 <li><a id="devlin-2018-bert">[devlin-2018-bert]</a> <a name="devlin-2018-bert"></a>Devlin, Chang, Lee, & Toutanova, Bert: Pre-Training of Deep Bidirectional  Transformers for Language Understanding, <i>CoRR</i>,  (2018). <a href="http://arxiv.org/abs/1810.04805v2" target="_blank" rel="noopener">link</a>.</li>
-<li><a id="gutmann-2012-noise-contr">[gutmann-2012-noise-contr]</a> <a name="gutmann-2012-noise-contr"></a>Gutmann & Hyv\"arinen, Noise-Contrastive Estimation of Unnormalized  Statistical Models, With Applications To Natural  Image Statistics, <i>Journal of Machine Learning Research</i>, <b>13(Feb)</b>, 307-361 (2012).</li>
+<li><a id="gutmann-2012-noise-contr">[gutmann-2012-noise-contr]</a> <a name="gutmann-2012-noise-contr"></a>Gutmann & Hyv\"arinen, Noise-Contrastive Estimation of Unnormalized  Statistical Models, With Applications To Natural  Image Statistics, <i>Journal of Machine Learning Research</i>, <b>13(Feb)</b>, 307-361 (2012). <a href="http://www.jmlr.org/papers/volume13/gutmann12a/gutmann12a.pdf" target="_blank" rel="noopener">link</a>.</li>
 <li><a id="mnih-2012-fast-simpl">[mnih-2012-fast-simpl]</a> <a name="mnih-2012-fast-simpl"></a>Mnih & Teh, A Fast and Simple Algorithm for Training Neural  Probabilistic Language Models, <i>CoRR</i>,  (2012). <a href="http://arxiv.org/abs/1206.6426v1" target="_blank" rel="noopener">link</a>.</li>
 <li><a id="dyer-2014-notes-noise">[dyer-2014-notes-noise]</a> <a name="dyer-2014-notes-noise"></a>Dyer, Notes on Noise Contrastive Estimation and Negative  Sampling, <i>CoRR</i>,  (2014). <a href="http://arxiv.org/abs/1410.8251v1" target="_blank" rel="noopener">link</a>.</li>
 </ul>
@@ -1532,6 +1585,16 @@ KL 散度越小，说明两个分布越接近。上式中第一项是 <code>q</c
   </div>
 
 
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://paperswithcode.com/" title="https:&#x2F;&#x2F;paperswithcode.com&#x2F;" rel="noopener" target="_blank">PaperWithCode</a>
+        </li>
+    </ul>
+  </div>
 
       </div>
         <div class="back-to-top motion-element">
@@ -1566,13 +1629,13 @@ KL 散度越小，说明两个分布越接近。上式中第一项是 <code>q</c
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">18k</span>
+    <span title="站点总字数">19k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">16 分钟</span>
+    <span title="站点阅读时长">17 分钟</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>
